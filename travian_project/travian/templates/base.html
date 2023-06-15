@@ -21,6 +21,10 @@
                 {% else %}
                     <li><a href="{% url 'signup' %}"> Signup </a></li>
                 {% endif %}
+                {% if user.is_staff or user.is_superuser %}
+                    <li><a href="{% url 'add_building' %}"> Add buildings </a></li>
+                    <li><a href="{% url 'build-building' %}">Build a Building</a></li>
+                {% endif %}
             </ul>
         </header>
         <main>

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Build a Building</h1>
+<form method="POST">
+  {% csrf_token %}
+  {% with village=request.user.village.first %}
+      {% if village %}
+        <input type="hidden" name="user_id" value="{{ user.id }}">
+        <input type="hidden" name="village_id" value="{{ village.id }}">
+      {% endif %}
+    {% endwith %}
+  <label for="building">Select a building:</label>
+  <select name="building_id" id="building">
+    {% for building in available_buildings %}
+      <option value="{{ building.id }}">{{ building.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Build</button>
+</form>
+{% endblock %}

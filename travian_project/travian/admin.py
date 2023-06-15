@@ -5,13 +5,14 @@ from django.db import connection
 
 @admin.register(Village)
 class VillageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'player', 'population', 'granary_capacity', 'cranny_capacity')
+    list_display = ('name', 'user', 'population', 'granary_capacity', 'cranny_capacity', 'building_names')
 
+    def building_names(self, obj):
+        return ", ".join(building.name for building in obj.building.all())
 
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'village', 'b_type', 'level')
-
+    list_display = ('name', 'b_type', 'level')
 
 class ResourceAdminForm(forms.ModelForm):
     class Meta:
@@ -21,17 +22,10 @@ class ResourceAdminForm(forms.ModelForm):
 
 class ResourceAdmin(admin.ModelAdmin):
     form = ResourceAdminForm
-    list_display = ['village', 'r_type', 'generation_rate']
+    list_display = ['village', 'building_names','generation_rate']
 
-    def save_model(self, request, obj, form, change):
-        # Check if the village has the corresponding building
-        village = obj.village
-        building_name = "Woodcutter"
-        if Building.objects.filter(name=building_name, village=village).exists():
-            super().save_model(request, obj, form, change)
-        else:
-            raise forms.ValidationError(f"The village does not have a {building_name} building.")
+    def building_names(self, obj):
+        return ", ".join(building.name for building in obj.building.all())
+    
 
-        # Save the resource instance
-        
 admin.site.register(Resource, ResourceAdmin)
