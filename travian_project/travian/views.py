@@ -19,36 +19,25 @@ def base(request):
 
 @login_required
 def build_building(request):
-    available_buildings = Building.objects.all()
     user_id = request.user.id
-    village = Village.objects.filter(user_id=user_id).first()
-    village_id = village.id if village else None
+    village = get_object_or_404(Village, user_id=user_id)
 
     if request.method == 'POST':
         building_id = request.POST.get('building_id')
-        try:
-            selected_building = Building.objects.get(id=building_id)
-        except Building.DoesNotExist:
-            selected_building = None
-        if selected_building and village_id:
-            print(selected_building.name)
-            if selected_building.b_type == 'Resource':
-                resource_name = selected_building.name
-                same_name_resources_count = village.resources.filter(building__name=resource_name).count()
-                print(same_name_resources_count)
-                if same_name_resources_count >= 4:
-                    return render(request, 'travian/build_building.html', {'available_buildings': available_buildings, 'error_message': 'You cannot have more than 4 buildings of the same type.'})
-            village = get_object_or_404(Village, id=village_id)
-            village.building.add(selected_building)
-            resource_generation_rate = selected_building.resource_generation_rate
-            building_level = selected_building.level
-            generation_rate = resource_generation_rate.get(str(building_level), 0)
-            resource = Resource.objects.create(village=village, generation_rate=generation_rate)
-            resource.building.add(selected_building)
-            return render(request, 'travian/build_building.html', {'available_buildings': available_buildings})
+        selected_building = get_object_or_404(Building, id=building_id)
 
-    context = {
-        'available_buildings': available_buildings,
-        'village_id': village_id,
-    }
-    return render(request, 'travian/build_building.html', context)
+        if selected_building.b_type == 'Resource':
+            resource_name = selected_building.name
+            same_name_resources_count = village.resources.filter(building__name=resource_name).count()
+            if same_name_resources_count >= 4:
+                error_message = 'You cannot have more than 4 buildings of the same type.'
+                return render(request, 'travian/build_building.html', {'available_buildings': Building.objects.all(), 'error_message': error_message})
+
+        village.building.add(selected_building)
+        resource_generation_rate = selected_building.resource_generation_rate
+        building_level = selected_building.level
+        generation_rate = resource_generation_rate.get(str(building_level), 0)
+        resource = Resource.objects.create(village=village, generation_rate=generation_rate)
+        resource.building.add(selected_building)
+
+    return render(request, 'travian/build_building.html', {'available_buildings': Building.objects.all()})
