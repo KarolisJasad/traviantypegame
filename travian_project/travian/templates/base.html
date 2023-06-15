@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% load static i18n %}
+<html lang="{{ LANGUAGE_CODE }}">
+<html lang="en">
+<head>{# nematoma dalis #}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>{% block title %} Travan {% endblock title %}</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <ul class="nav">
+                <li class="logo"> <a href="{% url 'base' %}"> Travan </a></li>
+                <li> Resources </li>
+                <li> Village </li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'signup' %}"> Signup </a></li>
+                {% endif %}
+            </ul>
+        </header>
+        <main>
+            {% block content %}{% endblock content %}
+        </main>
+        <footer><p>&copy; 2023 <a href="https://discord.gg/QAUWnqGF" target="_blank">PTU12 (Karolis J)</a></p></footer>
+    </div>
+</body>
+</html>

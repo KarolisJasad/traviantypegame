@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Sign up for {{ block.super }}{% endblock title %}
+{% block content %}
+<div class="signup-container">
+    <div class="description">
+        <h1>Sign up for Travan</h1>
+        <p> A competetive strategy game </p>
+        <p> Where you take control of a tribe </p>
+        <p> And fight other players </p>
+        <p> To reep the victory and it's glory </p>
+    </div>
+    <div class="signup-box">
+        <form class="signup-form" action="{{ request.path }}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" name="username" required value="{{ request.POST.username }}" class="form-control">
+                <br><small>Case sensitive, must be unique.</small>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" name="email" required value="{{ request.POST.email }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="password_confirm">Confirm Password</label>
+                <input type="password" name="password_confirm" required class="form-control">
+            </div>
+            <p><button type="submit" class="btn btn-primary">Confirm Sign Up</button></p>
+            <p>If you already have an account, you can <a href="{% url 'login' %}">login</a> instead.</p>
+        </form>
+    </div>
+</div>
+{% endblock content %}

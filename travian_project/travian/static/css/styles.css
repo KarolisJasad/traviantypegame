@@ -1,0 +1,138 @@
+body, html {
+height: 100%;
+margin: 0;
+background-image: url("../images/travan_background_image.jpg");
+height: 100%;
+background-position: center;
+background-repeat: no-repeat;
+background-size: cover;
+}
+
+.container {
+display: flex;
+flex-direction: column;
+min-height: 100%;
+}
+
+main {
+flex: 1;
+}
+
+header {
+background-color: rgba(135, 206, 250, 0.6); /* Light blue color with transparency */
+padding: 10px;
+}
+
+.nav {
+list-style-type: none;
+margin: 0;
+padding: 0;
+display: flex;
+align-items: center;
+}
+
+.logo {
+font-size: 24px;
+font-weight: bold;
+color: #ffffff; /* White text color */
+margin-right: 20px;
+}
+
+.nav li {
+margin-right: 10px;
+color: #ffffff; /* White text color */
+font-size: 16px;
+}
+
+footer {
+background-color: rgba(0, 48, 73, 0.5);
+color: #fff;
+padding: 0.1rem;
+text-align: center;
+margin-top: auto; /* Pushes the footer to the bottom */
+}
+
+footer a {
+color: #fff;
+text-decoration: none;
+display: inline-block;
+transition: background-color 0.3s ease;
+border-radius: 4px;
+}
+
+footer a:hover {
+background-color: #045f9d;
+}
+
+.signup-container {
+display: flex;
+justify-content: center;
+align-items: center;
+background-color: rgba(255, 255, 255, 0.3);
+padding: 20px;
+height: 100vh;
+}
+
+.signup-box {
+max-width: 400px;
+padding: 20px;
+background-color: rgba(245, 245, 245, 0.9);
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.signup-form {
+margin-top: 20px;
+}
+
+.form-group {
+margin-bottom: 15px;
+}
+
+label {
+font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+width: 100%;
+padding-top: 10px;
+padding-bottom: 10px;
+border: 1px solid #ccc;
+border-radius: 5px;
+}
+
+small {
+color: #888;
+font-size: 12px;
+}
+
+.btn {
+padding: 10px 20px;
+background-color: #007bff;
+color: #fff;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+.btn:hover {
+background-color: #0056b3;
+}
+
+.description {
+    max-width: 400px;
+    margin-right: 20px;
+  }
+  
+  .description h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .description p {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
