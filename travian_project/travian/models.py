@@ -36,7 +36,8 @@ class Village(models.Model):
     buildings = models.ManyToManyField(
         "Building",
         verbose_name=_("buildings"),
-        related_name="villages"
+        related_name="villages",
+        blank=True,
     )
     
 
@@ -55,7 +56,9 @@ class Building(models.Model):
         Village,
         verbose_name=_("village"),
         on_delete=models.CASCADE,
-        related_name="building"
+        related_name="building",
+        blank=True,
+        null=True
     )
     name = models.CharField(_("name"), max_length=50)
     b_type = models.CharField(_("b_type"), max_length=50, choices=BUILDING_TYPE_CHOICES)
@@ -79,17 +82,26 @@ class Resource(models.Model):
         Village, 
         verbose_name=_("village"), 
         on_delete=models.CASCADE,
-        related_name="resources"
+        related_name="resources",
+        blank=True,
+        null=True
     )
-    b_type = models.CharField(_("b_type"), max_length=50, choices=RESOURCE_TYPE_CHOICES)
-    generation_rate = models.PositiveIntegerField(_("generation_rate"))
+    r_type = models.CharField(_("r_type"), max_length=50, choices=RESOURCE_TYPE_CHOICES)
+    generation_rate = models.PositiveIntegerField(_("generation_rate"), default=0)
     
+    def save(self, *args, **kwargs):
+        if not self.generation_rate:
+            building = self.village.buildings.filter(name="Woodcutter").first()
+            if building:
+                self.generation_rate = building.resource_generation_rate.get(self.r_type, 0)
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = _("resource")
         verbose_name_plural = _("resources")
 
     def __str__(self):
-        return self.b_type
+        return self.r_type
 
     def get_absolute_url(self):
         return reverse("resource_detail", kwargs={"pk": self.pk})
