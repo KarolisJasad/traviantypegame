@@ -9,7 +9,7 @@ def add_building(request):
         form = BuildingForm(request.POST)
         if form.is_valid():
             building = form.save()
-            return redirect('building_detail', pk=building.pk)
+            return redirect('travian/building_detail')
     else:
         form = BuildingForm()
     return render(request, 'travian/add_building.html', {'form': form})
@@ -23,8 +23,6 @@ def build_building(request):
     user_id = request.user.id
     village = Village.objects.filter(user_id=user_id).first()
     village_id = village.id if village else None
-    print(village_id)
-    print(available_buildings)
 
     if request.method == 'POST':
         building_id = request.POST.get('building_id')
@@ -33,6 +31,13 @@ def build_building(request):
         except Building.DoesNotExist:
             selected_building = None
         if selected_building and village_id:
+            print(selected_building.name)
+            if selected_building.b_type == 'Resource':
+                resource_name = selected_building.name
+                same_name_resources_count = village.resources.filter(building__name=resource_name).count()
+                print(same_name_resources_count)
+                if same_name_resources_count >= 4:
+                    return render(request, 'travian/build_building.html', {'available_buildings': available_buildings, 'error_message': 'You cannot have more than 4 buildings of the same type.'})
             village = get_object_or_404(Village, id=village_id)
             village.building.add(selected_building)
             resource_generation_rate = selected_building.resource_generation_rate
