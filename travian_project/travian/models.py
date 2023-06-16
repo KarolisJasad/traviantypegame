@@ -80,25 +80,6 @@ class Village(models.Model):
     def get_absolute_url(self):
         return reverse("village_detail", kwargs={"pk": self.pk})
 
-class VillageBuilding(models.Model):
-    village = models.ForeignKey(
-        Village,
-        on_delete=models.CASCADE,
-        related_name='village_buildings'
-    )
-    building = models.ForeignKey(
-        Building,
-        on_delete=models.CASCADE,
-        related_name='building_villages'
-    )
-    name = models.CharField(_("name"), max_length=100)
-    level = models.IntegerField(default=1)               
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return f"{self.village} - {self.building}"
 
 class Resource(models.Model):
     village = models.ForeignKey(
@@ -125,5 +106,29 @@ class Resource(models.Model):
     def get_absolute_url(self):
         return reverse("resource_detail", kwargs={"pk": self.pk})
     
+class VillageBuilding(models.Model):
+    village = models.ForeignKey(
+        Village,
+        on_delete=models.CASCADE,
+        related_name='village_buildings'
+    )
+    building = models.ForeignKey(
+        Building,
+        on_delete=models.CASCADE,
+        related_name='building_villages'
+    )
+    resource = models.ForeignKey(
+        Resource, 
+        on_delete=models.CASCADE,
+        related_name='village_resources'
+    )
+    
+    name = models.CharField(_("name"), max_length=100)
+    level = models.IntegerField(default=1)               
 
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return f"{self.village} - {self.building}"
     

@@ -30,7 +30,7 @@ def build_building(request):
         error_message = validate_building_constraints(selected_building, village)
         if error_message:
             messages.error(request, error_message)
-        else:   
+        else:
             if deduct_resources(selected_building, village, 1):
                 existing_building = village.village_buildings.filter(building=selected_building).first()
                 if existing_building:
@@ -38,30 +38,41 @@ def build_building(request):
                     existing_count = village.village_buildings.filter(building=selected_building).count()
                     # Generate the new name based on the count
                     new_name = f"{selected_building.name} {existing_count + 1}"
+                    # Create a new Resource instance
+                    resource_generation_rate = selected_building.resource_generation_rate
+                    building_level = selected_building.level
+                    generation_rate = resource_generation_rate.get(str(building_level), 0)
+                    resource = Resource.objects.create(village=village, generation_rate=generation_rate)
+                    resource.building.add(selected_building)
                     # Create a new VillageBuilding instance with the new name
                     village_building = VillageBuilding.objects.create(
                         village=village,
                         building=selected_building,
+                        resource=resource,
                         name=new_name
                     )
                     messages.success(request, 'Building successfully constructed.')
                 else:
+                    # Create a new Resource instance
+                    resource_generation_rate = selected_building.resource_generation_rate
+                    building_level = selected_building.level
+                    generation_rate = resource_generation_rate.get(str(building_level), 0)
+                    resource = Resource.objects.create(village=village, generation_rate=generation_rate)
+                    resource.building.add(selected_building)
                     # Create a new VillageBuilding instance with the initial name
                     village_building = VillageBuilding.objects.create(
                         village=village,
                         building=selected_building,
+                        resource=resource,
                         name=selected_building.name
                     )
                     messages.success(request, 'Building successfully constructed.')
-                add_building_and_resource(selected_building, village)
-                messages.success(request, 'Building successfully constructed.')
             else:
                 messages.error(request, 'Insufficient resources to build.')
 
         return redirect(reverse('build_building'))
 
     return render(request, 'travian/build_building.html', {'available_buildings': Building.objects.all()})
-
 @login_required
 def upgrade_building(request):
     if request.method == 'POST':
@@ -70,6 +81,7 @@ def upgrade_building(request):
             village_building = get_object_or_404(VillageBuilding, id=building_id)
             selected_building = village_building.building
             village = village_building.village
+            resource = village_building.resource
 
             # Check if the player has enough resources for the upgrade
             if has_enough_resources(selected_building, village, village_building.level):
@@ -79,6 +91,12 @@ def upgrade_building(request):
                 # Upgrade the building level
                 village_building.level += 1
                 village_building.save()
+
+                # Update the resource generation rate
+                resource_generation_rate = selected_building.resource_generation_rate
+                new_generation_rate = resource_generation_rate.get(str(village_building.level), 0)
+                resource.generation_rate = new_generation_rate
+                resource.save()
 
                 return HttpResponse(f"Building with ID {building_id} has been upgraded to level {village_building.level}.")
             else:
