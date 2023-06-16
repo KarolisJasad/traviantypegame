@@ -2,20 +2,30 @@
 
 {% block content %}
   <h2>Upgrade a Building</h2>
-  <form method="POST" id="upgrade-form">
+  <form method="post" action="{% url 'upgrade_building' %}">
     {% csrf_token %}
     {% with village=request.user.village.first %}
       {% if village %}
         <input type="hidden" name="user_id" value="{{ user.id }}">
         <input type="hidden" name="village_id" value="{{ village.id }}">
+        <select name="building_select">
+          {% for village_building in village.village_buildings.all %}
+            <option value="{{ village_building.id }}">{{ village_building.building.name }} - Level: {{ village_building.level }}</option>
+          {% endfor %}
+        </select>
+        <input type="submit" value="Submit">
+      {% else %}
+        <p>No village found for the current user.</p>
       {% endif %}
     {% endwith %}
-    <label for="upgrade-building">Select a building to upgrade:</label>
-    <select name="building_id" id="upgrade-building">
-      {% for building in village_buildings %}
-        <option value="{{ building.id }}">{{ building.name }} - {{ building.level }} </option>
-      {% endfor %}
-    </select>
-    <button type="submit">Upgrade</button>
   </form>
+  {% if request.method == 'POST' %}
+    {% with building_id=request.POST.building_select %}
+      {% if building_id %}
+        <p>Building with ID {{ building_id }} has been submitted for upgrade.</p>
+      {% else %}
+        <p>No building selected for upgrade.</p>
+      {% endif %}
+    {% endwith %}
+  {% endif %}
 {% endblock %}

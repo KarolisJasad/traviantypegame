@@ -36,11 +36,12 @@ class Building(models.Model):
     building_cost = models.JSONField(_("building_cost"),)
 
     class Meta:
+        ordering = ['name']
         verbose_name = _("building")
         verbose_name_plural = _("buildings")
 
     def __str__(self):
-        return f"{self.name - {self.level}}"
+        return f"{self.name} - {self.level}"
 
     def get_absolute_url(self):
         return reverse("building_detail", kwargs={"pk": self.pk})
@@ -60,9 +61,16 @@ class Village(models.Model):
     iron_amount = models.PositiveIntegerField(_("iron_amount"), default=750)
     clay_amount = models.PositiveIntegerField(_("clay_amount"), default=750)
     crop_amount = models.PositiveIntegerField(_("crop_amount"), default=750)
-
+    building = models.ManyToManyField(
+        Building,
+        through="VillageBuilding",
+        verbose_name=_("buildings"),
+        blank=True,
+        related_name='buildings'
+    )
 
     class Meta:
+        ordering = ['name']
         verbose_name = _("village")
         verbose_name_plural = _("villages")
 
@@ -83,10 +91,11 @@ class VillageBuilding(models.Model):
         on_delete=models.CASCADE,
         related_name='building_villages'
     )
-    quantity = models.PositiveIntegerField(default=0)
+    name = models.CharField(_("name"), max_length=100)
+    level = models.IntegerField(default=1)               
 
     class Meta:
-        unique_together = ['village', 'building']
+        ordering = ['name']
 
     def __str__(self):
         return f"{self.village} - {self.building}"
