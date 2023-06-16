@@ -102,11 +102,11 @@ def upgrade_building(request):
                 resource.generation_rate = new_generation_rate
                 resource.save()
 
-                return HttpResponse(f"Building with ID {building_id} has been upgraded to level {village_building.level}.")
+                messages.success(request, 'Building successfully upgraded.')
             else:
-                return HttpResponse("Insufficient resources to upgrade the building.")
+                messages.error(request, 'Insufficient resources to upgrade.')
 
-    return render(request, 'travian/upgrade_building.html')
+    return render(request, 'travian/upgrade_building.html', {'messages': messages.get_messages(request)})
 
 def generate_building_name(building, village):
     # Get the count of existing buildings of the same type in the village

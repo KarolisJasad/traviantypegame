@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
   <h2>Upgrade a Building</h2>
   <form method="post" action="{% url 'upgrade_building' %}">
@@ -8,6 +7,11 @@
       {% if village %}
         <input type="hidden" name="user_id" value="{{ user.id }}">
         <input type="hidden" name="village_id" value="{{ village.id }}">
+        <ul class="messages">
+            {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
         <select name="building_select">
           {% for village_building in village.village_buildings.all %}
             <option value="{{ village_building.id }}">{{ village_building.building.name }} - Level: {{ village_building.level }}</option>
@@ -20,12 +24,5 @@
     {% endwith %}
   </form>
   {% if request.method == 'POST' %}
-    {% with building_id=request.POST.building_select %}
-      {% if building_id %}
-        <p>Building with ID {{ building_id }} has been submitted for upgrade.</p>
-      {% else %}
-        <p>No building selected for upgrade.</p>
-      {% endif %}
-    {% endwith %}
   {% endif %}
 {% endblock %}

@@ -16,19 +16,31 @@
                 <li class="logo"> <a href="{% url 'base' %}"> Travan </a></li>
                 <li> Resources </li>
                 <li> Village </li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'signup' %}"> Signup </a></li>
-                    <li><a href="{% url 'login' %}"> Login </a></li>
-                {% endif %}
                 {% if user.is_staff or user.is_superuser %}
                     <li><a href="{% url 'add_building' %}"> Add buildings </a></li>
                     <li><a href="{% url 'build_building' %}">Build a Building</a></li>
                     <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
-                {% endif %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% elif user.is_authenticated %}
+                    <li><a href="{% url 'build_building' %}">Build a Building</a></li>
+                    <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'signup' %}"> Signup </a></li>
+                    <li><a href="{% url 'login' %}"> Login </a></li>
+                {% endif %}           
             </ul>
         </header>
+        {% if user.is_authenticated and village %}
+            <div class="container">
+                    <ul class="res-nav">
+                        <li>Wood: {{ village.wood_amount }}/{{ village.granary_capacity }}</li>
+                        <li>Clay: {{ village.clay_amount }}/{{ village.granary_capacity }}</li>
+                        <li>Iron: {{ village.iron_amount }}/{{ village.granary_capacity }}</li>
+                        <li>Crop: {{ village.crop_amount }}/{{ village.cranny_capacity }}</li>
+                    </ul>
+            </div>
+        {% endif %}
         <main>
             {% block content %}{% endblock content %}
         </main>
