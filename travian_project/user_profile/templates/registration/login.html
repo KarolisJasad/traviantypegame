@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Login to {{ block.super }}{% endblock title %}
+{% block content %}
+<div class="login-container">
+    <h1>Login to PTU12 Autoservisas</h1>
+    {% if form.errors %}
+        <p class="box box-error">Login error. Please try again.</p>
+    {% endif %}
+    <form class="login-form" method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if request.GET.next and '/accounts/' not in request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% endif %}
+        <p><button type="submit">Log in</button></p>
+    </form>
+    <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+    <p>If you do not have an account, please <a href="{% url 'signup' %}">sign up</a>.</p>
+</div>
+{% endblock content %}

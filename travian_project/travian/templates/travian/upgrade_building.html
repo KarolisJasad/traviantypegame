@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Upgrade a Building</h2>
+  <form method="POST" id="upgrade-form">
+    {% csrf_token %}
+    {% with village=request.user.village.first %}
+      {% if village %}
+        <input type="hidden" name="user_id" value="{{ user.id }}">
+        <input type="hidden" name="village_id" value="{{ village.id }}">
+      {% endif %}
+    {% endwith %}
+    <label for="upgrade-building">Select a building to upgrade:</label>
+    <select name="building_id" id="upgrade-building">
+      {% for building in village_buildings %}
+        <option value="{{ building.id }}">{{ building.name }} - {{ building.level }} </option>
+      {% endfor %}
+    </select>
+    <button type="submit">Upgrade</button>
+  </form>
+{% endblock %}

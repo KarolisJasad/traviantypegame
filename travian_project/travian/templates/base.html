@@ -20,10 +20,12 @@
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
                     <li><a href="{% url 'signup' %}"> Signup </a></li>
+                    <li><a href="{% url 'login' %}"> Login </a></li>
                 {% endif %}
                 {% if user.is_staff or user.is_superuser %}
                     <li><a href="{% url 'add_building' %}"> Add buildings </a></li>
-                    <li><a href="{% url 'build-building' %}">Build a Building</a></li>
+                    <li><a href="{% url 'build_building' %}">Build a Building</a></li>
+                    <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
                 {% endif %}
             </ul>
         </header>

@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_protect
 
@@ -36,3 +38,19 @@ def signup(request):
             messages.success(request, "User registration successful!")
             return redirect('login')
     return render(request, 'registration/signup.html')
+
+def user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('base')  # Replace 'home' with the desired URL name for the home page
+    else:
+        form = AuthenticationForm(request)
+
+    context = {'form': form}
+    return render(request, 'registration/login.html', context)

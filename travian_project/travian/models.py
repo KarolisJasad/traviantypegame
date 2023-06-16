@@ -12,27 +12,39 @@ BUILDING_TYPE_CHOICES = [
         ("Military", "Military")
     ]
 
+LEVEL_CHOICES = [
+        (1, "Level 1"),
+        (2, "Level 2"),
+        (3, "Level 3"),
+        (4, "Level 4"),
+        (5, "Level 5"),
+        (6, "Level 6"),
+        (7, "Level 7"),
+        (8, "Level 8"),
+        (9, "Level 9"),
+        (10, "Level 10"),
+    ]
+
 
 class Building(models.Model):
     name = models.CharField(_("name"), max_length=50)
     b_type = models.CharField(_("b_type"), max_length=50, choices=BUILDING_TYPE_CHOICES)
-    level = models.PositiveIntegerField(_("level"), default=1)
+    level = models.PositiveIntegerField(_("level"), choices=LEVEL_CHOICES, default=1)
     construction_time = models.JSONField(_("construction_time"),)
     population = models.JSONField(_("population"),)
     resource_generation_rate = models.JSONField(_("resource_generation_rate"),)
+    building_cost = models.JSONField(_("building_cost"),)
 
     class Meta:
         verbose_name = _("building")
         verbose_name_plural = _("buildings")
 
     def __str__(self):
-        return self.name
+        return f"{self.name - {self.level}}"
 
     def get_absolute_url(self):
         return reverse("building_detail", kwargs={"pk": self.pk})
     
-
-
 class Village(models.Model):
     user = models.ForeignKey(
         User,
@@ -48,11 +60,7 @@ class Village(models.Model):
     iron_amount = models.PositiveIntegerField(_("iron_amount"), default=750)
     clay_amount = models.PositiveIntegerField(_("clay_amount"), default=750)
     crop_amount = models.PositiveIntegerField(_("crop_amount"), default=750)
-    building = models.ManyToManyField(
-        Building,
-        verbose_name=_("buildings"),
-        blank=True,
-    )
+
 
     class Meta:
         verbose_name = _("village")
@@ -63,6 +71,25 @@ class Village(models.Model):
 
     def get_absolute_url(self):
         return reverse("village_detail", kwargs={"pk": self.pk})
+
+class VillageBuilding(models.Model):
+    village = models.ForeignKey(
+        Village,
+        on_delete=models.CASCADE,
+        related_name='village_buildings'
+    )
+    building = models.ForeignKey(
+        Building,
+        on_delete=models.CASCADE,
+        related_name='building_villages'
+    )
+    quantity = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ['village', 'building']
+
+    def __str__(self):
+        return f"{self.village} - {self.building}"
 
 class Resource(models.Model):
     village = models.ForeignKey(
