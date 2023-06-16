@@ -73,6 +73,7 @@ def build_building(request):
         return redirect(reverse('build_building'))
 
     return render(request, 'travian/build_building.html', {'available_buildings': Building.objects.all()})
+
 @login_required
 def upgrade_building(request):
     if request.method == 'POST':
@@ -83,13 +84,16 @@ def upgrade_building(request):
             village = village_building.village
             resource = village_building.resource
 
-            # Check if the player has enough resources for the upgrade
+            # Check if the player has enough resources for the current level
             if has_enough_resources(selected_building, village, village_building.level):
-                # Deduct the resources for the upgrade
-                deduct_resources(selected_building, village, village_building.level)
+                # Get the building cost for the next level
+                next_level = village_building.level + 1
+                building_cost = selected_building.building_cost.get(str(village_building.level))
 
                 # Upgrade the building level
                 village_building.level += 1
+                # Deduct the resources for the current level
+                deduct_resources(selected_building, village, village_building.level)
                 village_building.save()
 
                 # Update the resource generation rate
@@ -168,3 +172,17 @@ def add_building_and_resource(building, village):
     generation_rate = resource_generation_rate.get(str(building_level), 0)
     resource = Resource.objects.create(village=village, generation_rate=generation_rate)
     resource.building.add(building)
+
+def can_upgrade_building(village_building):
+    # Check if the building has reached the maximum level
+    if village_building.level >= village_building.building.max_level:
+        return False
+
+    # Check if the village has enough resources to upgrade the building
+    required_resources = village_building.building.get_upgrade_cost(village_building.level + 1)
+    village = village_building.village
+    for resource, cost in required_resources.items():
+        if village.get_resource(resource) < cost:
+            return False
+
+    return True
