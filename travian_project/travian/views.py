@@ -1,12 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import BuildingForm
-from .models import Building, Resource, Village, VillageBuilding
-from django.shortcuts import get_object_or_404
-from django.db.models import F
 from django.contrib import messages
 from django.urls import reverse
-from django.http import HttpResponse
+from .forms import BuildingForm
+from .models import Building, Resource, Village, VillageBuilding
+from django.db.models import F
+
 
 def add_building(request):
     if request.method == 'POST':
@@ -18,8 +17,10 @@ def add_building(request):
         form = BuildingForm()
     return render(request, 'travian/add_building.html', {'form': form})
 
+
 def base(request):
     return render(request, 'base.html')
+
 
 @login_required
 def build_building(request):
@@ -28,51 +29,23 @@ def build_building(request):
         selected_building = get_object_or_404(Building, id=building_id)
         village = get_object_or_404(Village, user=request.user)
         error_message = validate_building_constraints(selected_building, village)
+
         if error_message:
             messages.error(request, error_message)
         else:
             if deduct_resources(selected_building, village, 1):
-                existing_building = village.village_buildings.filter(building=selected_building).first()
-                if existing_building:
-                    # Get the count of existing buildings of the same type
-                    existing_count = village.village_buildings.filter(building=selected_building).count()
-                    # Generate the new name based on the count
-                    new_name = f"{selected_building.name} {existing_count + 1}"
-                    # Create a new Resource instance
-                    resource_generation_rate = selected_building.resource_generation_rate
-                    building_level = selected_building.level
-                    generation_rate = resource_generation_rate.get(str(building_level), 0)
-                    resource = Resource.objects.create(village=village, generation_rate=generation_rate)
-                    resource.building.add(selected_building)
-                    # Create a new VillageBuilding instance with the new name
-                    village_building = VillageBuilding.objects.create(
-                        village=village,
-                        building=selected_building,
-                        resource=resource,
-                        name=new_name
-                    )
-                    messages.success(request, 'Building successfully constructed.')
-                else:
-                    # Create a new Resource instance
-                    resource_generation_rate = selected_building.resource_generation_rate
-                    building_level = selected_building.level
-                    generation_rate = resource_generation_rate.get(str(building_level), 0)
-                    resource = Resource.objects.create(village=village, generation_rate=generation_rate)
-                    resource.building.add(selected_building)
-                    # Create a new VillageBuilding instance with the initial name
-                    village_building = VillageBuilding.objects.create(
-                        village=village,
-                        building=selected_building,
-                        resource=resource,
-                        name=selected_building.name
-                    )
-                    messages.success(request, 'Building successfully constructed.')
+                existing_building_count = village.village_buildings.filter(building=selected_building).count()
+                new_name = generate_building_name(selected_building, existing_building_count + 1)
+                resource = create_resource(selected_building, village)
+                create_village_building(village, selected_building, resource, new_name)
+                messages.success(request, 'Building successfully constructed.')
             else:
                 messages.error(request, 'Insufficient resources to build.')
 
         return redirect(reverse('build_building'))
 
     return render(request, 'travian/build_building.html', {'available_buildings': Building.objects.all()})
+
 
 @login_required
 def upgrade_building(request):
@@ -82,40 +55,25 @@ def upgrade_building(request):
             village_building = get_object_or_404(VillageBuilding, id=building_id)
             selected_building = village_building.building
             village = village_building.village
-            resource = village_building.resource
+            current_level = village_building.level  # Get the current level
 
-            # Check if the player has enough resources for the current level
-            if has_enough_resources(selected_building, village, village_building.level):
-                # Get the building cost for the next level
-                next_level = village_building.level + 1
-                building_cost = selected_building.building_cost.get(str(village_building.level))
-
-                # Upgrade the building level
-                village_building.level += 1
-                # Deduct the resources for the current level
-                deduct_resources(selected_building, village, village_building.level)
-                village_building.save()
-
-                # Update the resource generation rate
-                resource_generation_rate = selected_building.resource_generation_rate
-                new_generation_rate = resource_generation_rate.get(str(village_building.level), 0)
-                resource.generation_rate = new_generation_rate
-                resource.save()
-
+            if current_level >= 10:
+                messages.error(request, 'Building is already at its maximum level.')
+            elif has_enough_resources(selected_building, village, current_level):
+                new_level=upgrade_building_level(village_building)
+                new_level
+                deduct_resources(selected_building, village, new_level)
+                update_resource_generation_rate(village_building)
                 messages.success(request, 'Building successfully upgraded.')
             else:
                 messages.error(request, 'Insufficient resources to upgrade.')
 
     return render(request, 'travian/upgrade_building.html', {'messages': messages.get_messages(request)})
 
-def generate_building_name(building, village):
-    # Get the count of existing buildings of the same type in the village
-    existing_building_count = village.village_buildings.filter(building=building).count()
 
-    # Generate the new name by appending the count to the building name
-    new_name = f"{building.name} {existing_building_count + 1}"
+def generate_building_name(building, count):
+    return f"{building.name} {count}"
 
-    return new_name
 
 def validate_building_constraints(building, village):
     if building.b_type == 'Resource':
@@ -125,8 +83,10 @@ def validate_building_constraints(building, village):
             return 'You cannot have more than 4 buildings of the same type.'
     return None
 
+
 def has_enough_resources(building, village, current_level):
     building_cost = building.building_cost.get(str(current_level + 1))
+
     if building_cost:
         wood_cost = building_cost.get('wood', 0)
         clay_cost = building_cost.get('clay', 0)
@@ -141,8 +101,10 @@ def has_enough_resources(building, village, current_level):
         )
     return False
 
+
 def deduct_resources(building, village, current_level=0):
     building_cost = building.building_cost.get(str(current_level))
+
     if building_cost:
         wood_cost = building_cost.get('wood', 0)
         clay_cost = building_cost.get('clay', 0)
@@ -165,24 +127,28 @@ def deduct_resources(building, village, current_level=0):
 
     return False
 
-def add_building_and_resource(building, village):
-    village.building.add(building)
-    resource_generation_rate = building.resource_generation_rate
+
+def create_resource(building, village):
     building_level = building.level
-    generation_rate = resource_generation_rate.get(str(building_level), 0)
+    generation_rate = building.resource_generation_rate.get(str(building_level), 0)
     resource = Resource.objects.create(village=village, generation_rate=generation_rate)
     resource.building.add(building)
+    return resource
 
-def can_upgrade_building(village_building):
-    # Check if the building has reached the maximum level
-    if village_building.level >= village_building.building.max_level:
-        return False
 
-    # Check if the village has enough resources to upgrade the building
-    required_resources = village_building.building.get_upgrade_cost(village_building.level + 1)
-    village = village_building.village
-    for resource, cost in required_resources.items():
-        if village.get_resource(resource) < cost:
-            return False
+def create_village_building(village, building, resource, name):
+    VillageBuilding.objects.create(village=village, building=building, resource=resource, name=name)
 
-    return True
+
+def upgrade_building_level(village_building):
+    village_building.level += 1
+    village_building.save()
+    return village_building.level
+
+
+def update_resource_generation_rate(village_building):
+    building = village_building.building
+    building_level = village_building.level
+    new_generation_rate = building.resource_generation_rate.get(str(building_level), 0)
+    village_building.resource.generation_rate = new_generation_rate
+    village_building.resource.save()
