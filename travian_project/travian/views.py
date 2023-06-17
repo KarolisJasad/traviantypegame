@@ -5,7 +5,10 @@ from django.urls import reverse
 from .forms import BuildingForm
 from collections import defaultdict
 from .models import Building, Resource, Village, VillageBuilding
+from .tasks import test_func, update_resource_amount
+from django.http import HttpResponse
 from django.db.models import F
+from .utils import calculate_total_generation_rate
 
 
 def add_building(request):
@@ -89,10 +92,10 @@ def has_enough_resources(building, village, current_level):
     building_cost = building.building_cost.get(str(current_level + 1))
 
     if building_cost:
-        wood_cost = building_cost.get('wood', 0)
-        clay_cost = building_cost.get('clay', 0)
-        iron_cost = building_cost.get('iron', 0)
-        crop_cost = building_cost.get('crop', 0)
+        wood_cost = building_cost.get('Wood', 0)
+        clay_cost = building_cost.get('Clay', 0)
+        iron_cost = building_cost.get('Iron', 0)
+        crop_cost = building_cost.get('Crop', 0)
 
         return (
             village.wood_amount >= wood_cost and
@@ -107,10 +110,10 @@ def deduct_resources(building, village, current_level=0):
     building_cost = building.building_cost.get(str(current_level))
 
     if building_cost:
-        wood_cost = building_cost.get('wood', 0)
-        clay_cost = building_cost.get('clay', 0)
-        iron_cost = building_cost.get('iron', 0)
-        crop_cost = building_cost.get('crop', 0)
+        wood_cost = building_cost.get('Wood', 0)
+        clay_cost = building_cost.get('Clay', 0)
+        iron_cost = building_cost.get('Iron', 0)
+        crop_cost = building_cost.get('Crop', 0)
 
         if (
             village.wood_amount >= wood_cost and
@@ -155,22 +158,6 @@ def update_resource_generation_rate(village_building):
     village_building.resource.save()
     
 
-def calculate_total_generation_rate(village):
-    total_generation_rate = {
-        'Woodcutter': 0,
-        'Clay_pit': 0,
-        'Iron_mine': 0,
-        'Crop': 0
-    }
-
-    village_buildings = village.village_buildings.all()
-
-    for village_building in village_buildings:
-        building_name = village_building.building.name
-        building_level = village_building.level
-        resource_generation_rate = village_building.building.resource_generation_rate.get(str(building_level), 0)
-        
-        if building_name in total_generation_rate:
-            total_generation_rate[building_name] += resource_generation_rate
-
-    return total_generation_rate
+def test(request):
+    update_resource_amount.delay()
+    return HttpResponse("Done")

@@ -10,6 +10,9 @@ def village_context(request):
 def generation_context(request):
     total_generation_rate = None
     if request.user.is_authenticated:
-        village = Village.objects.get(user=request.user)
-        total_generation_rate = calculate_total_generation_rate(village)
+        try:
+            village = Village.objects.get(user=request.user)
+            total_generation_rate = calculate_total_generation_rate(village)
+        except Village.DoesNotExist:
+            pass
     return {'total_generation_rate': total_generation_rate}
