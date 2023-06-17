@@ -33,12 +33,12 @@
         </header>
         {% if user.is_authenticated and village %}
             <div class="container">
-                    <ul class="res-nav">
-                        <li>Wood: {{ village.wood_amount }}/{{ village.granary_capacity }}</li>
-                        <li>Clay: {{ village.clay_amount }}/{{ village.granary_capacity }}</li>
-                        <li>Iron: {{ village.iron_amount }}/{{ village.granary_capacity }}</li>
-                        <li>Crop: {{ village.crop_amount }}/{{ village.cranny_capacity }}</li>
-                    </ul>
+                <ul class="res-nav">
+                    <li>Wood: {{ village.wood_amount }}/{{ village.granary_capacity }} (Generation Rate: {{ total_generation_rate.Woodcutter }})</li>
+                    <li>Clay: {{ village.clay_amount }}/{{ village.granary_capacity }} (Generation Rate: {{ total_generation_rate.Clay_pit }})</li>
+                    <li>Iron: {{ village.iron_amount }}/{{ village.granary_capacity }} (Generation Rate: {{ total_generation_rate.Iron_mine }})</li>
+                    <li>Crop: {{ village.crop_amount }}/{{ village.cranny_capacity }} (Generation Rate: {{ total_generation_rate.Crop }})</li>
+                </ul>
             </div>
         {% endif %}
         <main>

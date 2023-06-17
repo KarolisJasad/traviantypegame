@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from .forms import BuildingForm
+from collections import defaultdict
 from .models import Building, Resource, Village, VillageBuilding
 from django.db.models import F
 
@@ -19,7 +20,15 @@ def add_building(request):
 
 
 def base(request):
-    return render(request, 'base.html')
+    total_generation_rate = None
+    if request.user.is_authenticated:
+        village = Village.objects.get(user=request.user)
+        total_generation_rate = calculate_total_generation_rate(village)
+
+    context = {
+        'total_generation_rate': total_generation_rate
+    }
+    return render(request, 'base.html', context)
 
 
 @login_required
@@ -152,3 +161,24 @@ def update_resource_generation_rate(village_building):
     new_generation_rate = building.resource_generation_rate.get(str(building_level), 0)
     village_building.resource.generation_rate = new_generation_rate
     village_building.resource.save()
+    
+
+def calculate_total_generation_rate(village):
+    total_generation_rate = {
+        'Woodcutter': 0,
+        'Clay_pit': 0,
+        'Iron_mine': 0,
+        'Crop': 0
+    }
+
+    village_buildings = village.village_buildings.all()
+
+    for village_building in village_buildings:
+        building_name = village_building.building.name
+        building_level = village_building.level
+        resource_generation_rate = village_building.building.resource_generation_rate.get(str(building_level), 0)
+        
+        if building_name in total_generation_rate:
+            total_generation_rate[building_name] += resource_generation_rate
+
+    return total_generation_rate
