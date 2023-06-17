@@ -62,6 +62,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'travian.context_processors.village_context',
+                'travian.context_processors.generation_context',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',

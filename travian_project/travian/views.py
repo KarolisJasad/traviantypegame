@@ -20,15 +20,7 @@ def add_building(request):
 
 
 def base(request):
-    total_generation_rate = None
-    if request.user.is_authenticated:
-        village = Village.objects.get(user=request.user)
-        total_generation_rate = calculate_total_generation_rate(village)
-
-    context = {
-        'total_generation_rate': total_generation_rate
-    }
-    return render(request, 'base.html', context)
+    return render(request, 'base.html')
 
 
 @login_required
