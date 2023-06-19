@@ -61,9 +61,9 @@ def build_infrastructure(request):
             messages.error(request, f"You already have a {selected_building.name}. You cannot build another one.")
         else:
             if check_and_deduct_resources(selected_building, village, 0):
-                create_village_infrastructure(village, selected_building, name=selected_building.name)
+                village_building = create_village_infrastructure(village, selected_building, name=selected_building.name)
                 update_population(village)
-                update_village_resource_capacity(selected_building, village)
+                update_village_resource_capacity(selected_building, village_building)  # Updated this line
                 messages.success(request, 'Building successfully constructed.')
             else:
                 messages.error(request, 'Insufficient resources to build.')
@@ -87,7 +87,12 @@ def upgrade_building(request):
                 messages.error(request, 'Building is already at its maximum level.')
             elif check_and_deduct_resources(selected_building, village, current_level):
                 new_level = upgrade_building_level(village_building)
-                update_resource_generation_rate(village_building)
+
+                if selected_building.b_type == 'Resource':
+                    update_resource_generation_rate(village_building)
+                elif selected_building.name in ('Granary', 'Warehouse'):
+                    update_village_resource_capacity(selected_building, village_building)
+
                 update_population(village)
                 messages.success(request, 'Building successfully upgraded.')
             else:
@@ -146,6 +151,7 @@ def create_village_infrastructure(village, building, name):
         name=name
     )
     village_building.save()
+    return village_building
 
 
 def create_village_building(village, building, resource, name):
@@ -157,6 +163,18 @@ def upgrade_building_level(village_building):
     village_building.save()
     return village_building.level
 
+
+def update_capacity(village_building, capacity_attribute):
+    selected_building = village_building.building
+    building_level = village_building.level
+    extra_attributes = selected_building.extra_attributes
+
+    if extra_attributes and capacity_attribute in extra_attributes:
+        capacity_data = extra_attributes[capacity_attribute]
+        new_capacity = capacity_data.get(str(building_level))
+        if new_capacity:
+            setattr(village_building, capacity_attribute.lower(), new_capacity)
+            village_building.save()
 
 def update_resource_generation_rate(village_building):
     building = village_building.building
