@@ -1,33 +1,20 @@
+from __future__ import absolute_import, unicode_literals
 import os
-from celery import Celery
-from django.db.models import F
 
-# Set the default Django settings module for the 'celery' program.
+from celery import Celery
+from django.conf import settings
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'travian_project.settings')
 
 app = Celery('travian_project')
+app.conf.enable_utc = False
 
-# Load task modules from all registered Django app configs.
+app.conf.update(timezone = 'Europe/Vilnius')
+
+app.config_from_object(settings, namespace='CELERY')
+
 app.autodiscover_tasks()
 
 @app.task(bind=True)
 def debug_task(self):
     print(f'Request: {self.request!r}')
-
-# Configure Celery settings...
-
-app.conf.update(
-    # Broker URL
-    broker_url='redis://localhost:6379/0',
-
-    # Result backend (set to None if you don't use any)
-    result_backend=None,
-
-    # Number of worker processes (adjust as needed)
-    worker_concurrency=1,
-
-    # Additional configuration options...
-)
-
-if __name__ == '__main__':
-    app.start()

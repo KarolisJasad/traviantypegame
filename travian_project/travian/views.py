@@ -5,9 +5,8 @@ from django.urls import reverse
 from .forms import BuildingForm
 from collections import defaultdict
 from .models import Building, Resource, Village, VillageBuilding
-from .tasks import test_func, update_resource_amount
-from django.http import HttpResponse
 from django.db.models import F
+from django.http import HttpResponse
 from .utils import calculate_total_generation_rate
 
 
@@ -157,7 +156,3 @@ def update_resource_generation_rate(village_building):
     village_building.resource.generation_rate = new_generation_rate
     village_building.resource.save()
     
-
-def test(request):
-    update_resource_amount.delay()
-    return HttpResponse("Done")

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static i18n %}
+{% load humanize %}
 <html lang="{{ LANGUAGE_CODE }}">
 <html lang="en">
 <head>{# nematoma dalis #}
@@ -34,10 +35,10 @@
         {% if user.is_authenticated and village %}
             <div class="container">
                 <ul class="res-nav">
-                    <li>Wood: {{ village.wood_amount }}/{{ village.granary_capacity }} (Generation Rate: {{ total_generation_rate.Woodcutter }})</li>
-                    <li>Clay: {{ village.clay_amount }}/{{ village.granary_capacity }} (Generation Rate: {{ total_generation_rate.Clay_pit }})</li>
-                    <li>Iron: {{ village.iron_amount }}/{{ village.granary_capacity }} (Generation Rate: {{ total_generation_rate.Iron_mine }})</li>
-                    <li>Crop: {{ village.crop_amount }}/{{ village.cranny_capacity }} (Generation Rate: {{ total_generation_rate.Crop }})</li>
+                    <li>Wood: {{ village.wood_amount|floatformat:"-1" }}/{{ village.granary_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Woodcutter|floatformat:0 }})</li>
+                    <li>Clay: {{ village.clay_amount|floatformat:"-1"}}/{{ village.granary_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Clay_pit|floatformat:0 }})</li>
+                    <li>Iron: {{ village.iron_amount|floatformat:"-1" }}/{{ village.granary_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Iron_mine|floatformat:0 }})</li>
+                    <li>Crop: {{ village.crop_amount|floatformat:"-1" }}/{{ village.cranny_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Crop|floatformat:0 }})</li>
                 </ul>
             </div>
         {% endif %}
