@@ -61,13 +61,10 @@ def build_infrastructure(request):
             messages.error(request, f"You already have a {selected_building.name}. You cannot build another one.")
         else:
             if check_and_deduct_resources(selected_building, village, 0):
-                # Check if the building already exists in the village
-                if village.village_buildings.filter(building=selected_building).exists():
-                    new_name = selected_building.name
-                    create_village_infrastructure(village, selected_building, name=new_name)
-                    update_population(village)
-                    update_village_resource_capacity(selected_building, village)
-                    messages.success(request, 'Building successfully constructed.')
+                create_village_infrastructure(village, selected_building, name=selected_building.name)
+                update_population(village)
+                update_village_resource_capacity(selected_building, village)
+                messages.success(request, 'Building successfully constructed.')
             else:
                 messages.error(request, 'Insufficient resources to build.')
 
