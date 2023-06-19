@@ -7,7 +7,7 @@ from collections import defaultdict
 from .models import Building, Resource, Village, VillageBuilding
 from django.db.models import F
 from django.http import HttpResponse
-from .utils import calculate_total_generation_rate
+from .utils import calculate_total_generation_rate, update_village_resource_capacity
 
 
 def add_building(request):
@@ -46,10 +46,35 @@ def build_building(request):
             else:
                 messages.error(request, 'Insufficient resources to build.')
 
-        return redirect(reverse('build_building'))
+        return redirect(reverse('build_resource'))
 
-    return render(request, 'travian/build_building.html', {'available_buildings': Building.objects.all()})
+    return render(request, 'travian/build_resource.html', {'available_buildings': Building.objects.all()})
 
+@login_required
+def build_infrastructure(request):
+    if request.method == 'POST':
+        building_id = request.POST.get('building_id')
+        selected_building = get_object_or_404(Building, id=building_id)
+        village = get_object_or_404(Village, user=request.user)
+
+        if village.village_buildings.filter(building=selected_building).exists():
+            messages.error(request, f"You already have a {selected_building.name}. You cannot build another one.")
+        else:
+            if check_and_deduct_resources(selected_building, village, 0):
+                # Check if the building already exists in the village
+                if village.village_buildings.filter(building=selected_building).exists():
+                    new_name = selected_building.name
+                    create_village_infrastructure(village, selected_building, name=new_name)
+                    update_population(village)
+                    update_village_resource_capacity(selected_building, village)
+                    messages.success(request, 'Building successfully constructed.')
+            else:
+                messages.error(request, 'Insufficient resources to build.')
+
+        return redirect(reverse('build_infrastructure'))
+
+    available_buildings = Building.objects.filter(b_type='Infrastructure')
+    return render(request, 'travian/build_infrastructure.html', {'available_buildings': available_buildings})
 
 @login_required
 def upgrade_building(request):
@@ -116,6 +141,14 @@ def create_resource(building, village):
     resource = Resource.objects.create(village=village, generation_rate=generation_rate)
     resource.building.add(building)
     return resource
+
+def create_village_infrastructure(village, building, name):
+    village_building = VillageBuilding.objects.create(
+        village=village,
+        building=building,
+        name=name
+    )
+    village_building.save()
 
 
 def create_village_building(village, building, resource, name):

@@ -5,7 +5,7 @@ from django.db import connection
 
 @admin.register(Village)
 class VillageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'population', 'granary_capacity', 'cranny_capacity', 'building_names')
+    list_display = ('name', 'user', 'population', 'warehouse_capacity', 'granary_capacity', 'building_names')
 
     def building_names(self, obj):
         return ", ".join(building.name for building in obj.building.all())

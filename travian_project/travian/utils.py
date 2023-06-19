@@ -6,7 +6,7 @@ def calculate_total_generation_rate(village):
         'Crop': 0
     }
 
-    village_buildings = village.village_buildings.all()
+    village_buildings = village.village_buildings.filter(building__b_type='Resource')
 
     for village_building in village_buildings:
         building_name = village_building.building.name
@@ -23,3 +23,23 @@ def calculate_total_generation_rate(village):
             total_generation_rate['Crop'] += resource_generation_rate
 
     return total_generation_rate
+
+
+def update_village_resource_capacity(selected_building, village):
+    extra_attributes = selected_building.extra_attributes
+    if extra_attributes:
+        level = village.village_buildings.filter(building=selected_building).count()
+
+        if selected_building.name == 'Granary' and 'granarycapacity' in extra_attributes:
+            granary_capacity_data = extra_attributes['granarycapacity']
+            if str(level) in granary_capacity_data:
+                granary_capacity = granary_capacity_data[str(level)]
+                village.granary_capacity = granary_capacity
+                village.save()
+
+        elif selected_building.name == 'Warehouse' and 'warehousecapacity' in extra_attributes:
+            warehouse_capacity_data = extra_attributes['warehousecapacity']
+            if str(level) in warehouse_capacity_data:
+                warehouse_capacity = warehouse_capacity_data[str(level)]
+                village.warehouse_capacity = warehouse_capacity
+                village.save()

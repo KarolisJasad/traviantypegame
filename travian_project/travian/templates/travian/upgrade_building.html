@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 {% block content %}
   <h2>Upgrade a Building</h2>
   <form method="post" action="{% url 'upgrade_building' %}">
@@ -14,7 +15,7 @@
           </ul>
         <select name="building_select">
           {% for village_building in village.village_buildings.all %}
-            <option value="{{ village_building.id }}">{{ village_building.building.name }} - Level: {{ village_building.level }}</option>
+              <option value="{{ village_building.id }}">{{ village_building.building.name }} - Level: {{ village_building.level }} Cost: {{ building_cost.level_str }}</option>
           {% endfor %}
         </select>
         <input type="submit" value="Submit">

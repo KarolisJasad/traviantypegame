@@ -10,7 +10,8 @@ User = get_user_model()
 
 BUILDING_TYPE_CHOICES = [
         ("Resource", "Resource"),
-        ("Military", "Military")
+        ("Military", "Military"),
+        ("Infrastructure", "Infrastructure")
     ]
 
 LEVEL_CHOICES = [
@@ -35,6 +36,7 @@ class Building(models.Model):
     population = models.JSONField(_("population"),)
     resource_generation_rate = models.JSONField(_("resource_generation_rate"),)
     building_cost = models.JSONField(_("building_cost"),)
+    extra_attributes = models.JSONField(_("extra_attributes"), blank=True, null=True)
 
     class Meta:
         ordering = ['name']
@@ -57,7 +59,7 @@ class Village(models.Model):
     name = models.CharField(_("name"), max_length=50)
     population = models.PositiveIntegerField(_("population"), default=0)
     granary_capacity = models.PositiveIntegerField(_("granary_capacity"), default=800)
-    cranny_capacity = models.PositiveIntegerField(_("cranny_capacity"), default=800)
+    warehouse_capacity = models.PositiveIntegerField(_("cranny_capacity"), default=800)
     wood_amount = models.DecimalField(_("wood_amount"), max_digits=10, decimal_places=2, default=Decimal('750.00'))
     clay_amount = models.DecimalField(_("clay_amount"), max_digits=10, decimal_places=2, default=Decimal('750.00'))
     iron_amount = models.DecimalField(_("iron_amount"), max_digits=10, decimal_places=2, default=Decimal('750.00'))
@@ -121,7 +123,8 @@ class VillageBuilding(models.Model):
     resource = models.ForeignKey(
         Resource, 
         on_delete=models.CASCADE,
-        related_name='village_resources'
+        related_name='village_resources',
+        blank=True, null=True
     )
     
     name = models.CharField(_("name"), max_length=100)
