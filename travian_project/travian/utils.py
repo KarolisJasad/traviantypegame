@@ -44,3 +44,6 @@ def update_village_resource_capacity(selected_building, village_building):
                 village_building.village.warehouse_capacity = warehouse_capacity
 
         village_building.village.save()
+
+
+
