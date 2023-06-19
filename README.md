@@ -12,16 +12,17 @@ Django-Celery-Results /
 2. venv\scripts\activate
 3. pip install redis
 4. pip install django
-5. pip install django-celery-beat
-6. pip install django-celery-results
-7. cd travian_project
-8. py manage.py makemigrations
-9. py manage.py migrate
-10. py manage.py createsuperuser
-11. Open 3 different terminals pathed to travian_project
-11.1. python manage.py runsever
+5. pip install celery
+6. pip install django-celery-beat
+7. pip install django-celery-results
+8. cd travian_project
+9. py manage.py makemigrations
+10. py manage.py migrate
+11. py manage.py createsuperuser
+12. Open 3 different terminals pathed to travian_project
+12.1. python manage.py runsever
 12.2. celery -A travian_project.celery worker --pool=solo -l info
-13.3. celery -A travian_project.celery beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+12.3. celery -A travian_project.celery beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
 
 Currently you have to go to admin panel and make a village through there and all the functionalities that are included now will work then.
 
