@@ -39,6 +39,7 @@
                     <li>Clay: {{ village.clay_amount|floatformat:"-1"}}/{{ village.granary_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Clay_pit|floatformat:0 }})</li>
                     <li>Iron: {{ village.iron_amount|floatformat:"-1" }}/{{ village.granary_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Iron_mine|floatformat:0 }})</li>
                     <li>Crop: {{ village.crop_amount|floatformat:"-1" }}/{{ village.cranny_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Crop|floatformat:0 }})</li>
+                    <li> Village population: {{ village.population }} </li>
                 </ul>
             </div>
         {% endif %}

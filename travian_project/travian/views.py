@@ -36,11 +36,12 @@ def build_building(request):
         if error_message:
             messages.error(request, error_message)
         else:
-            if deduct_resources(selected_building, village, 1):
+            if check_and_deduct_resources(selected_building, village, 0):
                 existing_building_count = village.village_buildings.filter(building=selected_building).count()
                 new_name = generate_building_name(selected_building, existing_building_count + 1)
                 resource = create_resource(selected_building, village)
                 create_village_building(village, selected_building, resource, new_name)
+                update_population(village)
                 messages.success(request, 'Building successfully constructed.')
             else:
                 messages.error(request, 'Insufficient resources to build.')
@@ -58,21 +59,19 @@ def upgrade_building(request):
             village_building = get_object_or_404(VillageBuilding, id=building_id)
             selected_building = village_building.building
             village = village_building.village
-            current_level = village_building.level  # Get the current level
+            current_level = village_building.level
 
             if current_level >= 10:
                 messages.error(request, 'Building is already at its maximum level.')
-            elif has_enough_resources(selected_building, village, current_level):
-                new_level=upgrade_building_level(village_building)
-                new_level
-                deduct_resources(selected_building, village, new_level)
+            elif check_and_deduct_resources(selected_building, village, current_level):
+                new_level = upgrade_building_level(village_building)
                 update_resource_generation_rate(village_building)
+                update_population(village)
                 messages.success(request, 'Building successfully upgraded.')
             else:
                 messages.error(request, 'Insufficient resources to upgrade.')
 
     return render(request, 'travian/upgrade_building.html', {'messages': messages.get_messages(request)})
-
 
 def generate_building_name(building, count):
     return f"{building.name} {count}"
@@ -87,46 +86,26 @@ def validate_building_constraints(building, village):
     return None
 
 
-def has_enough_resources(building, village, current_level):
-    building_cost = building.building_cost.get(str(current_level + 1))
+def check_and_deduct_resources(selected_building, village, current_level):
+    building_costs = selected_building.building_cost.get(str(current_level + 1), {})
+    wood_cost = building_costs.get('Wood', 0)
+    clay_cost = building_costs.get('Clay', 0)
+    iron_cost = building_costs.get('Iron', 0)
+    crop_cost = building_costs.get('Crop', 0)
 
-    if building_cost:
-        wood_cost = building_cost.get('Wood', 0)
-        clay_cost = building_cost.get('Clay', 0)
-        iron_cost = building_cost.get('Iron', 0)
-        crop_cost = building_cost.get('Crop', 0)
-
-        return (
-            village.wood_amount >= wood_cost and
-            village.clay_amount >= clay_cost and
-            village.iron_amount >= iron_cost and
-            village.crop_amount >= crop_cost
-        )
-    return False
-
-
-def deduct_resources(building, village, current_level=0):
-    building_cost = building.building_cost.get(str(current_level))
-
-    if building_cost:
-        wood_cost = building_cost.get('Wood', 0)
-        clay_cost = building_cost.get('Clay', 0)
-        iron_cost = building_cost.get('Iron', 0)
-        crop_cost = building_cost.get('Crop', 0)
-
-        if (
-            village.wood_amount >= wood_cost and
-            village.clay_amount >= clay_cost and
-            village.iron_amount >= iron_cost and
-            village.crop_amount >= crop_cost
-        ):
-            Village.objects.filter(id=village.id).update(
-                wood_amount=F('wood_amount') - wood_cost,
-                clay_amount=F('clay_amount') - clay_cost,
-                iron_amount=F('iron_amount') - iron_cost,
-                crop_amount=F('crop_amount') - crop_cost
-            )
-            return True
+    if (
+        village.wood_amount >= wood_cost and
+        village.clay_amount >= clay_cost and
+        village.iron_amount >= iron_cost and
+        village.crop_amount >= crop_cost
+    ):
+        # Deduct resources
+        village.wood_amount -= wood_cost
+        village.clay_amount -= clay_cost
+        village.iron_amount -= iron_cost
+        village.crop_amount -= crop_cost
+        village.save()
+        return True
 
     return False
 
@@ -155,4 +134,16 @@ def update_resource_generation_rate(village_building):
     new_generation_rate = building.resource_generation_rate.get(str(building_level), 0)
     village_building.resource.generation_rate = new_generation_rate
     village_building.resource.save()
-    
+
+def update_population(village):
+    village_buildings = village.village_buildings.all()
+
+    total_population = 0
+    for village_building in village_buildings:
+        building = village_building.building
+        building_level = village_building.level
+        building_population = building.population.get(str(building_level), 0)
+        total_population += building_population
+
+    village.population = total_population
+    village.save()
