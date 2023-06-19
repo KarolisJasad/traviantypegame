@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from decimal import Decimal
 import json
 from django.core.exceptions import ValidationError
 
@@ -57,10 +58,10 @@ class Village(models.Model):
     population = models.PositiveIntegerField(_("population"), default=0)
     granary_capacity = models.PositiveIntegerField(_("granary_capacity"), default=800)
     cranny_capacity = models.PositiveIntegerField(_("cranny_capacity"), default=800)
-    wood_amount = models.PositiveIntegerField(_("wood_amount"), default=750)
-    iron_amount = models.PositiveIntegerField(_("iron_amount"), default=750)
-    clay_amount = models.PositiveIntegerField(_("clay_amount"), default=750)
-    crop_amount = models.PositiveIntegerField(_("crop_amount"), default=750)
+    wood_amount = models.DecimalField(_("wood_amount"), max_digits=10, decimal_places=2, default=Decimal('750.00'))
+    clay_amount = models.DecimalField(_("clay_amount"), max_digits=10, decimal_places=2, default=Decimal('750.00'))
+    iron_amount = models.DecimalField(_("iron_amount"), max_digits=10, decimal_places=2, default=Decimal('750.00'))
+    crop_amount = models.DecimalField(_("crop_amount"), max_digits=10, decimal_places=2, default=Decimal('750.00'))
     building = models.ManyToManyField(
         Building,
         through="VillageBuilding",

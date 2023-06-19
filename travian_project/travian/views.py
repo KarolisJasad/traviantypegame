@@ -87,7 +87,7 @@ def validate_building_constraints(building, village):
 
 
 def check_and_deduct_resources(selected_building, village, current_level):
-    building_costs = selected_building.building_cost.get(str(current_level + 1), {})
+    building_costs = selected_building.building_cost.get(str(current_level + 1))
     wood_cost = building_costs.get('Wood', 0)
     clay_cost = building_costs.get('Clay', 0)
     iron_cost = building_costs.get('Iron', 0)
