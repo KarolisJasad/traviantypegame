@@ -2,12 +2,12 @@
 Work in progress
 Travian inspired game(Mostly a clone, just trying out django capabilities)
 # Requirements
-Redis: https://redis.io/download/
-Django
-Celery
-Django-Celery-Beat
-Django-Celery-Results
-# Installation/Running
+Redis: https://redis.io/download/ /
+Django /
+Celery /
+Django-Celery-Beat /
+Django-Celery-Results /
+# Installation/Running 
 1. py -m venv venv
 2. venv\scripts\activate
 3. pip install redis
