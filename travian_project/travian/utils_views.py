@@ -31,6 +31,36 @@ def check_and_deduct_resources(selected_building, village, current_level):
 
     return False
 
+def calculate_troop_cost(construction_cost, quantity):
+    total_cost = {}
+    for resource, cost in construction_cost.items():
+        total_cost[resource] = {}
+        for res_type, res_cost in cost.items():
+            total_cost[resource][res_type] = res_cost * quantity
+    return total_cost
+
+
+def deduct_resources(cost, village):
+    resource_costs = cost.get('1', {})  # Retrieve the cost dictionary for the troop type
+    village.wood_amount -= resource_costs.get('Wood', 0)
+    village.clay_amount -= resource_costs.get('Clay', 0)
+    village.iron_amount -= resource_costs.get('Iron', 0)
+    village.crop_amount -= resource_costs.get('Crop', 0)
+    village.save()
+
+def check_village_resources(total_cost, village):
+    for resource, cost in total_cost.items():
+        for res_type, res_cost in cost.items():
+            if res_type == 'Wood' and village.wood_amount < res_cost:
+                return False
+            elif res_type == 'Clay' and village.clay_amount < res_cost:
+                return False
+            elif res_type == 'Iron' and village.iron_amount < res_cost:
+                return False
+            elif res_type == 'Crop' and village.crop_amount < res_cost:
+                return False
+    return True
+
 def create_resource(building, village):
     building_level = building.level
     generation_rate = building.resource_generation_rate.get(str(building_level), 0)

@@ -28,33 +28,6 @@
       <button type="submit">Build</button>
     </form>
 
-    {% if barracks_level >= 1 %}
-    <h2>Build Troop</h2>
-    {% if barracks_level >= 5 %}
-        <form method="POST" id="build-swordsman-form">
-        {% csrf_token %}
-        <input type="hidden" name="user_id" value="{{ user.id }}">
-        <input type="hidden" name="village_id" value="{{ village.id }}">
-        <label for="swordsman">Build Swordsman:</label>
-        <input type="number" name="swordsman_count" id="swordsman" value="1" min="1">
-        <button type="submit">Build Swordsman</button>
-        </form>
-    {% else %}
-        <p>Barracks level is below 5. Upgrade the Barracks to unlock the ability to build Swordsman.</p>
-    {% endif %}
-
-    <form method="POST" id="build-phalanx-form">
-        {% csrf_token %}
-        <input type="hidden" name="user_id" value="{{ user.id }}">
-        <input type="hidden" name="village_id" value="{{ village.id }}">
-        <label for="phalanx">Build Phalanx:</label>
-        <input type="number" name="phalanx_count" id="phalanx" value="1" min="1">
-        <button type="submit">Build Phalanx</button>
-    </form>
-    {% else %}
-    <p>Barracks building is not yet built in the village.</p>
-    {% endif %}
-
   {% else %}
     <p>No village found for the current user.</p>
   {% endif %}

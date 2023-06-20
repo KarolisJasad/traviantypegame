@@ -4,11 +4,12 @@ from django.contrib import messages
 from django.urls import reverse
 from .forms import BuildingForm
 from collections import defaultdict
-from .models import Building, Resource, Village, VillageBuilding, Troop
+from .models import Building, Resource, Village, VillageBuilding, Troop, VillageTroop
 from django.db.models import F
 from django.http import HttpResponse
 from .utils import *
 from .utils_views import *
+import json
 
 
 def add_building(request):
@@ -96,11 +97,8 @@ def build_infantry(request):
         return redirect(reverse('build_infantry'))
 
     available_buildings = Building.objects.filter(b_type='Military')
-    barracks = Building.objects.get(name='Barracks')
-    barracks_level = village.village_buildings.get(building=barracks).level if village.village_buildings.filter(building=barracks).exists() else 0
-    available_troops = Troop.objects.all()  # Fetch the available troops
 
-    return render(request, 'travian/build_infantry.html', {'available_buildings': available_buildings, 'barracks_level': barracks_level, 'available_troops': available_troops})
+    return render(request, 'travian/build_infantry.html', {'available_buildings': available_buildings})
 
 @login_required
 def upgrade_building(request):
@@ -128,6 +126,45 @@ def upgrade_building(request):
                 messages.error(request, 'Insufficient resources to upgrade.')
 
     return render(request, 'travian/upgrade_building.html', {'messages': messages.get_messages(request)})
+
+@login_required
+def troop_building(request):
+    village = get_object_or_404(Village, user=request.user)
+    barracks = Building.objects.get(name='Barracks')
+    barracks_level = village.village_buildings.get(building=barracks).level if village.village_buildings.filter(building=barracks).exists() else 0
+    available_troops = Troop.objects.all()  # Fetch the available troops
+    if request.method == 'POST':
+        selected_troop_id = request.POST.get('troop_id')
+        quantity = int(request.POST.get('quantity', 0))
+
+        try:
+            selected_troop = Troop.objects.get(id=selected_troop_id)
+            total_cost = calculate_troop_cost(selected_troop.construction_cost, quantity)
+        except Troop.DoesNotExist:
+            messages.error(request, 'Selected troop does not exist')
+            return redirect(reverse('troop_building'))
+
+        if quantity <= 0:
+            messages.error(request, 'Wrong quantity selected')
+            return redirect(reverse('troop_building'))
+
+        if not check_village_resources(total_cost, village):
+            messages.error(request, 'Insufficient resources to build troops.')
+            return redirect(reverse('troop_building'))
+
+        # Deduct the resources from the village
+        print(total_cost)
+        deduct_resources(total_cost, village)
+
+        # Add the troops to the village
+        village_troop, _ = VillageTroop.objects.get_or_create(village=village, troop=selected_troop)
+        village_troop.quantity += quantity
+        village_troop.save()
+
+        # Redirect to a success page or appropriate view
+        return redirect(reverse('troop_building'))
+
+    return render(request, 'travian/troop_building.html', {'barracks_level': barracks_level, 'available_troops': available_troops})
 
 def generate_building_name(building, count):
     return f"{building.name} {count}"

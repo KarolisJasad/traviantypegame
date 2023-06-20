@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Build Troops</h2>
+
+  {% if barracks_level >= 1 %}
+    <h3>Barracks Level: {{ barracks_level }}</h3>
+
+    <form method="POST" action="{% url 'troop_building' %}">
+        {% csrf_token %}
+        <label for="troop_select">Select Troop:</label>
+        <select name="troop_id" id="troop_select">
+          {% for troop in available_troops %}
+            <option value="{{ troop.id }}">{{ troop.name }}</option>
+          {% endfor %}
+        </select>
+      
+        <label for="troop_quantity">Quantity:</label>
+        <input type="number" name="quantity" id="troop_quantity" value="1" min="1">
+      
+        <button type="submit">Build Troops</button>
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      </form>
+  {% else %}
+    <p>Barracks building is not yet built in the village.</p>
+  {% endif %}
+{% endblock %}
