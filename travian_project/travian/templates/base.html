@@ -22,9 +22,11 @@
                     <li><a href="{% url 'build_resource' %}">Build Resources</a></li>
                     <li><a href="{% url 'build_infrastructure'%}"> Build Infrastructure</a></li>
                     <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
+                    <li><a href="{% url 'build_infantry' %}">Build Infantry troops</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 {% elif user.is_authenticated %}
-                    <li><a href="{% url 'build_building' %}">Build Resources</a></li>
+                    <li><a href="{% url 'build_resource' %}">Build Resources</a></li>
+                    <li><a href="{% url 'build_infantry' %}">Build Infantry troops</a></li>
                     <li><a href="{% url 'build_infrastructure'%}"> Build Infrastructure</a></li>
                     <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>

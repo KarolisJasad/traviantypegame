@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import Village, Building, Resource
-from django import forms
-from django.db import connection
+from .models import Village, Building, Resource, Troop, VillageBuilding, VillageTroop
 
 @admin.register(Village)
 class VillageAdmin(admin.ModelAdmin):
@@ -14,18 +12,21 @@ class VillageAdmin(admin.ModelAdmin):
 class BuildingAdmin(admin.ModelAdmin):
     list_display = ('name', 'b_type', 'level')
 
-class ResourceAdminForm(forms.ModelForm):
-    class Meta:
-        model = Resource
-        fields = '__all__'
-
-
+@admin.register(Resource)
 class ResourceAdmin(admin.ModelAdmin):
-    form = ResourceAdminForm
-    list_display = ['village', 'building_names','generation_rate']
+    list_display = ['village', 'building_names', 'generation_rate']
 
     def building_names(self, obj):
         return ", ".join(building.name for building in obj.building.all())
-    
 
-admin.site.register(Resource, ResourceAdmin)
+@admin.register(Troop)
+class TroopAdmin(admin.ModelAdmin):
+    list_display = ['t_type', 'name', 'attack', 'defense', 'carrying_capacity', 'construction_cost', 'crop_consumption']
+
+@admin.register(VillageBuilding)
+class VillageBuildingAdmin(admin.ModelAdmin):
+    list_display = ['village', 'building', 'resource', 'name', 'level']
+
+@admin.register(VillageTroop)
+class VillageTroopAdmin(admin.ModelAdmin):
+    list_display = ['village', 'troop', 'quantity']

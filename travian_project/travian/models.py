@@ -14,6 +14,11 @@ BUILDING_TYPE_CHOICES = [
         ("Infrastructure", "Infrastructure")
     ]
 
+TROOP_TYPE_CHOICES = [
+        ("Infantry", "Infantry"),
+        ("Cavalry", "Cavalry")
+    ]
+
 LEVEL_CHOICES = [
         (1, "Level 1"),
         (2, "Level 2"),
@@ -108,7 +113,29 @@ class Resource(models.Model):
 
     def get_absolute_url(self):
         return reverse("resource_detail", kwargs={"pk": self.pk})
+
+class Troop(models.Model):
+    name = models.CharField(_("name"), max_length=50)
+    t_type = models.CharField(_("t_type"), max_length=50, choices=TROOP_TYPE_CHOICES, blank=True, null=True)
+    attack = models.PositiveIntegerField(_("attack"), default=0)
+    defense = models.PositiveIntegerField(_("defense"), default=0)
+    carrying_capacity = models.PositiveIntegerField(_("carrying_capacityi"), default=0)
+    crop_consumption = models.PositiveIntegerField(_("crop_consumption"), default=0)
+    construction_cost = models.JSONField(_("construction_cost"), blank=True, null=True)
+    construction_time = models.JSONField(_("construction_time"), blank=True, null=True)
     
+
+    class Meta:
+        verbose_name = _("troop")
+        verbose_name_plural = _("troops")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("troop_detail", kwargs={"pk": self.pk})
+
+
 class VillageBuilding(models.Model):
     village = models.ForeignKey(
         Village,
@@ -135,4 +162,29 @@ class VillageBuilding(models.Model):
 
     def __str__(self):
         return f"{self.village} - {self.building}"
+
+class VillageTroop(models.Model):
+    village = models.ForeignKey(
+        Village, 
+        on_delete=models.CASCADE, 
+        related_name='village_troops'
+    )
+    troop = models.ForeignKey(
+        Troop, 
+        on_delete=models.CASCADE,
+        related_name='village_troops'
+    )
+    quantity = models.PositiveIntegerField(_("quantity"), default=0)
+
+
+    class Meta:
+        verbose_name = _("villageTroop")
+        verbose_name_plural = _("villageTroops")
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("villageTroop_detail", kwargs={"pk": self.pk})
+
     

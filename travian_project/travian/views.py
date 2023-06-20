@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.urls import reverse
 from .forms import BuildingForm
 from collections import defaultdict
-from .models import Building, Resource, Village, VillageBuilding
+from .models import Building, Resource, Village, VillageBuilding, Troop
 from django.db.models import F
 from django.http import HttpResponse
 from .utils import *
@@ -73,6 +73,34 @@ def build_infrastructure(request):
 
     available_buildings = Building.objects.filter(b_type='Infrastructure')
     return render(request, 'travian/build_infrastructure.html', {'available_buildings': available_buildings})
+
+@login_required
+def build_infantry(request):
+    village = get_object_or_404(Village, user=request.user)
+
+    if request.method == 'POST':
+        building_id = request.POST.get('building_id')
+        selected_building = get_object_or_404(Building, id=building_id)
+
+        if village.village_buildings.filter(building=selected_building).exists():
+            messages.error(request, f"You already have a {selected_building.name}. You cannot build another one.")
+        else:
+            if check_and_deduct_resources(selected_building, village, 0):
+                village_building = create_village_infrastructure(village, selected_building, name=selected_building.name)
+                update_population(village)
+                update_village_resource_capacity(selected_building, village_building)
+                messages.success(request, 'Building successfully constructed.')
+            else:
+                messages.error(request, 'Insufficient resources to build.')
+
+        return redirect(reverse('build_infantry'))
+
+    available_buildings = Building.objects.filter(b_type='Military')
+    barracks = Building.objects.get(name='Barracks')
+    barracks_level = village.village_buildings.get(building=barracks).level if village.village_buildings.filter(building=barracks).exists() else 0
+    available_troops = Troop.objects.all()  # Fetch the available troops
+
+    return render(request, 'travian/build_infantry.html', {'available_buildings': available_buildings, 'barracks_level': barracks_level, 'available_troops': available_troops})
 
 @login_required
 def upgrade_building(request):

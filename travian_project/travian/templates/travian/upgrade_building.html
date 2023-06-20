@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
 {% block content %}
-  <h2>Upgrade a Building</h2>
+  <h1>Upgrade a Building</h1>
   <form method="post" action="{% url 'upgrade_building' %}">
     {% csrf_token %}
     {% with village=request.user.village.first %}
