@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="resources-table">
+  <h2>Players</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Village name</th>
+        <th>Population</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for player in players %}
+      {% if player != request.user %}  {# Check if the player is not the currently logged-in user #}
+      <tr>
+        <td>{{ player.username }}</td>
+        <td>
+          {% for village in player.village.all %}
+            {{ village.name }}
+          {% endfor %}
+        </td>
+        <td>
+          {% for village in player.village.all %}
+            {{ village.population }}
+          {% endfor %}
+        </td>
+        <td>
+          <a href="{% url 'attack' player.id %}" class="attack-link">Attack</a>
+        </td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

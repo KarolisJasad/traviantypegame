@@ -182,7 +182,7 @@ class VillageTroop(models.Model):
         verbose_name_plural = _("villageTroops")
 
     def __str__(self):
-        return self.name
+        return self.troop.name
 
     def get_absolute_url(self):
         return reverse("villageTroop_detail", kwargs={"pk": self.pk})

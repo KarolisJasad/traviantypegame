@@ -24,6 +24,7 @@
                     <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
                     <li><a href="{% url 'build_infantry' %}">Build Infantry building</a></li>
                     <li><a href="{% url 'troop_building' %}">Build Infantry troops</a></li>
+                    <li><a href="{% url 'player_list' %}">Player list</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 {% elif user.is_authenticated %}
                     <li><a href="{% url 'build_resource' %}">Build Resources</a></li>
@@ -31,6 +32,7 @@
                     <li><a href="{% url 'build_infantry' %}">Build Infantry building</a></li>
                     <li><a href="{% url 'troop_building' %}">Build Infantry troops</a></li>
                     <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
+                    <li><a href="{% url 'player_list' %}">Player list</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
                     <li><a href="{% url 'signup' %}"> Signup </a></li>
@@ -41,10 +43,10 @@
         {% if user.is_authenticated and village %}
             <div class="container">
                 <ul class="res-nav">
-                    <li>Wood: {{ village.wood_amount|floatformat:"-1" }}/{{ village.warehouse_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Woodcutter|floatformat:0 }})</li>
-                    <li>Clay: {{ village.clay_amount|floatformat:"-1"}}/{{ village.warehouse_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Clay_pit|floatformat:0 }})</li>
-                    <li>Iron: {{ village.iron_amount|floatformat:"-1" }}/{{ village.warehouse_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Iron_mine|floatformat:0 }})</li>
-                    <li>Crop: {{ village.crop_amount|floatformat:"-1" }}/{{ village.granary_capacity|floatformat:0 }} (Generation Rate: {{ total_generation_rate.Crop|floatformat:0 }})</li>
+                    <li>Wood: {{ village.wood_amount|floatformat:"-1" }}/{{ village.warehouse_capacity|floatformat:0 }}</li>
+                    <li>Clay: {{ village.clay_amount|floatformat:"-1"}}/{{ village.warehouse_capacity|floatformat:0 }}</li>
+                    <li>Iron: {{ village.iron_amount|floatformat:"-1" }}/{{ village.warehouse_capacity|floatformat:0 }}</li>
+                    <li>Crop: {{ village.crop_amount|floatformat:"-1" }}/{{ village.granary_capacity|floatformat:0 }}</li>
                     <li> Village population: {{ village.population }} </li>
                 </ul>
             </div>

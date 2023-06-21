@@ -4,10 +4,11 @@ from django.contrib import messages
 from django.urls import reverse
 from .forms import BuildingForm
 from collections import defaultdict
-from .models import Building, Resource, Village, VillageBuilding, Troop, VillageTroop
+from .models import User, Building, Resource, Village, VillageBuilding, Troop, VillageTroop
 from django.db.models import F
 from .utils_views import *
 from .utils_tasks import *
+from decimal import Decimal
 
 
 def add_building(request):
@@ -127,6 +128,8 @@ def upgrade_building(request):
 def troop_building(request):
     village = get_object_or_404(Village, user=request.user)
     barracks = Building.objects.get(name='Barracks')
+    stable = Building.objects.get(name="Stable")
+    stable_level = village.village_buildings.get(building=stable).level if village.village_buildings.filter(building=stable).exists() else 0
     barracks_level = village.village_buildings.get(building=barracks).level if village.village_buildings.filter(building=barracks).exists() else 0
     available_troops = Troop.objects.all()
     if request.method == 'POST':
@@ -155,7 +158,70 @@ def troop_building(request):
 
         return redirect(reverse('troop_building'))
 
-    return render(request, 'travian/troop_building.html', {'barracks_level': barracks_level, 'available_troops': available_troops})
+    return render(request, 'travian/troop_building.html', {'barracks_level': barracks_level, 'stable_level': stable_level, 'available_troops': available_troops})
+
+def player_list(request):
+    players = User.objects.all()  # Retrieve all players
+    context = {'players': players}
+    return render(request, 'travian/player_list.html', context)
+
+
+from django.shortcuts import redirect
+
+def attack_view(request, player_id):
+    player = get_object_or_404(User, id=player_id)
+    attacked_village = player.village.first()  # Assuming a player has only one village, retrieve the first village
+    logged_village = get_object_or_404(Village, user=request.user)
+    troops = logged_village.village_troops.all()  # Fetch troops associated with the village
+
+    if request.method == 'POST':
+        selected_troops = {}  # Store the selected troop quantities
+        total_carrying_capacity = 0  # Total carrying capacity of the attack
+
+        for troop in troops:
+            quantity = int(request.POST.get(f'troop_quantity_{troop.id}', 0))
+            selected_troops[troop] = quantity
+            total_carrying_capacity += troop.troop.carrying_capacity * quantity
+
+        # Calculate the resource amounts to steal
+        wood_amount = total_carrying_capacity / 4
+        clay_amount = total_carrying_capacity / 4
+        iron_amount = total_carrying_capacity / 4
+        crop_amount = total_carrying_capacity / 4
+
+        wood_amount = min(attacked_village.wood_amount, Decimal(wood_amount))
+        clay_amount = min(attacked_village.clay_amount, Decimal(clay_amount))
+        iron_amount = min(attacked_village.iron_amount, Decimal(iron_amount))
+        crop_amount = min(attacked_village.crop_amount, Decimal(crop_amount))
+
+        total_stolen_amount = wood_amount + clay_amount + iron_amount + crop_amount
+
+        attacked_village.wood_amount -= wood_amount
+        attacked_village.clay_amount -= clay_amount
+        attacked_village.iron_amount -= iron_amount
+        attacked_village.crop_amount -= crop_amount
+        attacked_village.save()
+
+        logged_village.wood_amount += wood_amount
+        logged_village.clay_amount += clay_amount
+        logged_village.iron_amount += iron_amount
+        logged_village.crop_amount += crop_amount
+
+        logged_village.wood_amount = min(logged_village.wood_amount, logged_village.warehouse_capacity)
+        logged_village.clay_amount = min(logged_village.clay_amount, logged_village.warehouse_capacity)
+        logged_village.iron_amount = min(logged_village.iron_amount, logged_village.warehouse_capacity)
+        logged_village.crop_amount = min(logged_village.crop_amount, logged_village.granary_capacity)
+
+        logged_village.save()
+
+        # Perform any additional logic here, such as deducting the stolen resources from the attacked village
+
+        # Redirect to a new page showing the information
+        return render(request, 'travian/attack_result.html', {'attacked_village': attacked_village, 'player_id': player_id, 'wood_amount': wood_amount, 'clay_amount': clay_amount, 'iron_amount': iron_amount, 'crop_amount': crop_amount, 'total_carrying_capacity': total_carrying_capacity, 'total_stolen_amount':total_stolen_amount})
+    return render(request, 'travian/attack.html', {'player': player, 'attacked_village': attacked_village, 'troops': troops})
+
 
 def generate_building_name(building, count):
     return f"{building.name} {count}"
+
+
