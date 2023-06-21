@@ -1,5 +1,5 @@
 from celery import shared_task
-from .utils import calculate_total_generation_rate
+from .utils_tasks import calculate_total_generation_rate
 from django.db.models import F
 
 @shared_task
@@ -28,9 +28,3 @@ def update_resource_amount():
             village.crop_amount == village.granary_capacity
 
         village.save()
-
-@shared_task(bind=True)
-def test_func(self):
-    for i in range(10):
-        print(i)
-    return "WTF"

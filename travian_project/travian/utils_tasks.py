@@ -34,25 +34,6 @@ def calculate_total_generation_rate(village):
     return total_generation_rate
 
 
-def update_village_resource_capacity(selected_building, village_building):
-    extra_attributes = selected_building.extra_attributes
-
-    if extra_attributes:
-        level = village_building.level
-
-        if selected_building.name == 'Granary':
-            granary_capacity_data = extra_attributes.get('granarycapacity', {})
-            granary_capacity = granary_capacity_data.get(str(level))
-            if granary_capacity:
-                village_building.village.granary_capacity = granary_capacity
-
-        elif selected_building.name == 'Warehouse':
-            warehouse_capacity_data = extra_attributes.get('warehousecapacity', {})
-            warehouse_capacity = warehouse_capacity_data.get(str(level))
-            if warehouse_capacity:
-                village_building.village.warehouse_capacity = warehouse_capacity
-
-        village_building.village.save()
 
 
 

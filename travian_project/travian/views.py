@@ -6,10 +6,8 @@ from .forms import BuildingForm
 from collections import defaultdict
 from .models import Building, Resource, Village, VillageBuilding, Troop, VillageTroop
 from django.db.models import F
-from django.http import HttpResponse
-from .utils import *
 from .utils_views import *
-import json
+from .utils_tasks import *
 
 
 def add_building(request):
@@ -22,10 +20,8 @@ def add_building(request):
         form = BuildingForm()
     return render(request, 'travian/add_building.html', {'form': form})
 
-
 def home(request):
     return render(request, 'travian/home.html')
-
 
 @login_required
 def build_building(request):
@@ -132,7 +128,7 @@ def troop_building(request):
     village = get_object_or_404(Village, user=request.user)
     barracks = Building.objects.get(name='Barracks')
     barracks_level = village.village_buildings.get(building=barracks).level if village.village_buildings.filter(building=barracks).exists() else 0
-    available_troops = Troop.objects.all()  # Fetch the available troops
+    available_troops = Troop.objects.all()
     if request.method == 'POST':
         selected_troop_id = request.POST.get('troop_id')
         quantity = int(request.POST.get('quantity', 0))
@@ -152,16 +148,11 @@ def troop_building(request):
             messages.error(request, 'Insufficient resources to build troops.')
             return redirect(reverse('troop_building'))
 
-        # Deduct the resources from the village
-        print(total_cost)
         deduct_resources(total_cost, village)
-
-        # Add the troops to the village
         village_troop, _ = VillageTroop.objects.get_or_create(village=village, troop=selected_troop)
         village_troop.quantity += quantity
         village_troop.save()
 
-        # Redirect to a success page or appropriate view
         return redirect(reverse('troop_building'))
 
     return render(request, 'travian/troop_building.html', {'barracks_level': barracks_level, 'available_troops': available_troops})

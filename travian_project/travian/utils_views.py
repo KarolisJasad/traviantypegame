@@ -87,19 +87,6 @@ def upgrade_building_level(village_building):
     village_building.save()
     return village_building.level
 
-
-def update_capacity(village_building, capacity_attribute):
-    selected_building = village_building.building
-    building_level = village_building.level
-    extra_attributes = selected_building.extra_attributes
-
-    if extra_attributes and capacity_attribute in extra_attributes:
-        capacity_data = extra_attributes[capacity_attribute]
-        new_capacity = capacity_data.get(str(building_level))
-        if new_capacity:
-            setattr(village_building, capacity_attribute.lower(), new_capacity)
-            village_building.save()
-
 def update_resource_generation_rate(village_building):
     building = village_building.building
     building_level = village_building.level
@@ -119,3 +106,24 @@ def update_population(village):
 
     village.population = total_population
     village.save()
+
+def update_village_resource_capacity(selected_building, village_building):
+    extra_attributes = selected_building.extra_attributes
+
+    if extra_attributes:
+        level = village_building.level
+
+        if selected_building.name == 'Granary':
+            granary_capacity_data = extra_attributes.get('granarycapacity', {})
+            granary_capacity = granary_capacity_data.get(str(level))
+            if granary_capacity:
+                village_building.village.granary_capacity = granary_capacity
+
+        elif selected_building.name == 'Warehouse':
+            warehouse_capacity_data = extra_attributes.get('warehousecapacity', {})
+            warehouse_capacity = warehouse_capacity_data.get(str(level))
+            if warehouse_capacity:
+                village_building.village.warehouse_capacity = warehouse_capacity
+
+        village_building.village.save()
+
