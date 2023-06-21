@@ -23,8 +23,8 @@ def add_building(request):
     return render(request, 'travian/add_building.html', {'form': form})
 
 
-def base(request):
-    return render(request, 'base.html')
+def home(request):
+    return render(request, 'travian/home.html')
 
 
 @login_required

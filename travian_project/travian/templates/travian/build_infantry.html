@@ -20,7 +20,7 @@
       <label for="building">Select a building:</label>
       <select name="building_id" id="building">
         {% for building in available_buildings %}
-          {% if building.name == "Barracks" %}
+          {% if building.b_type == "Military" %}
             <option value="{{ building.id }}">{{ building.name }} - Level {{ building.level }} - Cost: {{ building.cost }}</option>
           {% endif %}
         {% endfor %}

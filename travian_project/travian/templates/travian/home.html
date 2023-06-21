@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static%}
+{% block content %}
+<div class="resources-table">
+  <h2>Resources</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Resource</th>
+        <th>Generation Rate/Per hour</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Wood</td>
+        <td>{{ total_generation_rate.Woodcutter|floatformat:0 }}</td>
+      </tr>
+      <tr>
+        <td>Clay</td>
+        <td>{{ total_generation_rate.Clay_pit|floatformat:0 }}</td>
+      </tr>
+      <tr>
+        <td>Iron</td>
+        <td>{{ total_generation_rate.Iron_mine|floatformat:0 }}</td>
+      </tr>
+      <tr>
+        <td>Crop</td>
+        <td>{{ total_generation_rate.Crop|floatformat:0 }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="troops-table">
+  <h2>Troops</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Troop Type</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for village_troop in village.village_troops.all %}
+        <tr>
+          <td>{{ village_troop.troop.name }}</td>
+          <td>{{ village_troop.quantity }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+
+
