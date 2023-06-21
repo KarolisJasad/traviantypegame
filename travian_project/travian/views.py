@@ -9,6 +9,7 @@ from django.db.models import F
 from .utils_views import *
 from .utils_tasks import *
 from decimal import Decimal
+import math
 
 
 def add_building(request):
@@ -166,13 +167,18 @@ def player_list(request):
     return render(request, 'travian/player_list.html', context)
 
 
-from django.shortcuts import redirect
+
+def calculate_survival_percentage(attack_power, defense_power, constant):
+    x = (attack_power / defense_power) * constant
+    survival_percentage = 1 / (1 + math.exp(-x))
+    return survival_percentage
 
 def attack_view(request, player_id):
     player = get_object_or_404(User, id=player_id)
     attacked_village = player.village.first()  # Assuming a player has only one village, retrieve the first village
     logged_village = get_object_or_404(Village, user=request.user)
     troops = logged_village.village_troops.all()  # Fetch troops associated with the village
+    defender_troops = attacked_village.village_troops.all()  # Fetch defender's troops
 
     if request.method == 'POST':
         selected_troops = {}  # Store the selected troop quantities
@@ -183,29 +189,79 @@ def attack_view(request, player_id):
             selected_troops[troop] = quantity
             total_carrying_capacity += troop.troop.carrying_capacity * quantity
 
-        # Calculate the resource amounts to steal
-        wood_amount = total_carrying_capacity / 4
-        clay_amount = total_carrying_capacity / 4
-        iron_amount = total_carrying_capacity / 4
-        crop_amount = total_carrying_capacity / 4
 
-        wood_amount = min(attacked_village.wood_amount, Decimal(wood_amount))
-        clay_amount = min(attacked_village.clay_amount, Decimal(clay_amount))
-        iron_amount = min(attacked_village.iron_amount, Decimal(iron_amount))
-        crop_amount = min(attacked_village.crop_amount, Decimal(crop_amount))
+        selected_troops_ids = []
+        for troop, quantity in selected_troops.items():
+            if quantity > 0:
+                selected_troops_ids.extend([troop.id] * quantity)  # Append the troop ID multiple times based on the selected quantity
+                troop.quantity -= quantity  # Subtract the selected quantity from the troop's current quantity
+                troop.save()      
+        # Calculate the attacker's total attack power
+        attacker_attack_power = 0
+        for troop, quantity in selected_troops.items():
+            attacker_attack_power += troop.troop.attack * quantity
 
-        total_stolen_amount = wood_amount + clay_amount + iron_amount + crop_amount
+        # Calculate the defender's total defense power
+        defender_defense_power = 1
+        for defender_troop in defender_troops:
+            defender_defense_power += defender_troop.troop.defense * defender_troop.quantity
 
-        attacked_village.wood_amount -= wood_amount
-        attacked_village.clay_amount -= clay_amount
-        attacked_village.iron_amount -= iron_amount
-        attacked_village.crop_amount -= crop_amount
-        attacked_village.save()
+        # Calculate the survival percentage for the attacker's troops
+        attacker_survival_percentage = calculate_survival_percentage(attacker_attack_power, defender_defense_power, 0.3)
 
-        logged_village.wood_amount += wood_amount
-        logged_village.clay_amount += clay_amount
-        logged_village.iron_amount += iron_amount
-        logged_village.crop_amount += crop_amount
+        # Calculate the survival percentage for the defender's troops
+        defender_survival_percentage = calculate_survival_percentage(defender_defense_power, attacker_attack_power, 0.3)
+
+        # Update the attacker's village resources based on the outcome
+        if attacker_attack_power > defender_defense_power:
+            # Attacker wins
+
+            # Calculate the stolen resource amounts
+            wood_amount = total_carrying_capacity / 4
+            clay_amount = total_carrying_capacity / 4
+            iron_amount = total_carrying_capacity / 4
+            crop_amount = total_carrying_capacity / 4
+
+            wood_amount = min(attacked_village.wood_amount, Decimal(wood_amount))
+            clay_amount = min(attacked_village.clay_amount, Decimal(clay_amount))
+            iron_amount = min(attacked_village.iron_amount, Decimal(iron_amount))
+            crop_amount = min(attacked_village.crop_amount, Decimal(crop_amount))
+
+            total_stolen_amount = wood_amount + clay_amount + iron_amount + crop_amount
+
+            attacked_village.wood_amount -= wood_amount
+            attacked_village.clay_amount -= clay_amount
+            attacked_village.iron_amount -= iron_amount
+            attacked_village.crop_amount -= crop_amount
+            attacked_village.save()
+
+            logged_village.wood_amount += wood_amount
+            logged_village.clay_amount += clay_amount
+            logged_village.iron_amount += iron_amount
+            logged_village.crop_amount += crop_amount
+
+            # Apply survival percentage to the attacker's troops
+            for troop, quantity in selected_troops.items():
+                surviving_quantity = math.ceil(quantity * attacker_survival_percentage)
+                troop.quantity += surviving_quantity
+                troop.save()
+
+            # Remove all troops from the defender's village
+            defender_troops.delete()
+            return render(request, 'travian/attack_result.html', {'attacked_village': attacked_village, 'player_id': player_id, 'wood_amount': wood_amount, 'clay_amount': clay_amount, 'iron_amount': iron_amount, 'crop_amount': crop_amount, 'total_carrying_capacity': total_carrying_capacity, 'total_stolen_amount': total_stolen_amount})
+
+        else:
+            # Defender wins
+
+            # Apply survival percentage to the defender's troops
+            for defender_troop in defender_troops:
+                surviving_quantity = math.ceil(defender_troop.quantity * defender_survival_percentage)
+                defender_troop.quantity = surviving_quantity
+                defender_troop.save()
+
+            # Remove all troops from the attacker's village
+            troop.quantity -= quantity  # Subtract the selected quantity from the troop's current quantity
+            troop.save()
 
         logged_village.wood_amount = min(logged_village.wood_amount, logged_village.warehouse_capacity)
         logged_village.clay_amount = min(logged_village.clay_amount, logged_village.warehouse_capacity)
@@ -217,7 +273,7 @@ def attack_view(request, player_id):
         # Perform any additional logic here, such as deducting the stolen resources from the attacked village
 
         # Redirect to a new page showing the information
-        return render(request, 'travian/attack_result.html', {'attacked_village': attacked_village, 'player_id': player_id, 'wood_amount': wood_amount, 'clay_amount': clay_amount, 'iron_amount': iron_amount, 'crop_amount': crop_amount, 'total_carrying_capacity': total_carrying_capacity, 'total_stolen_amount':total_stolen_amount})
+        return render(request, 'travian/attack_result.html', {'attacked_village': attacked_village, 'player_id': player_id})
     return render(request, 'travian/attack.html', {'player': player, 'attacked_village': attacked_village, 'troops': troops})
 
 
