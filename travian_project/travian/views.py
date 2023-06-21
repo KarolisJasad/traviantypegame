@@ -211,7 +211,6 @@ def attack_view(request, player_id):
 
         # Calculate the survival percentage for the defender's troops
         defender_survival_percentage = calculate_survival_percentage(defender_defense_power, attacker_attack_power, 0.3)
-
         # Update the attacker's village resources based on the outcome
         if attacker_attack_power > defender_defense_power:
             # Attacker wins

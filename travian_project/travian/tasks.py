@@ -9,7 +9,7 @@ def update_resource_amount():
     villages = Village.objects.all()
     for village in villages:
         total_generation_rate = calculate_total_generation_rate(village)
-
+        print(total_generation_rate.get('Crop', 0))
         if village.wood_amount < village.warehouse_capacity:
             village.wood_amount = F('wood_amount') + total_generation_rate.get('Woodcutter', 0) / 1800
         else:
@@ -22,9 +22,12 @@ def update_resource_amount():
             village.iron_amount = F('iron_amount') + total_generation_rate.get('Iron_mine', 0) / 1800
         else:
             village.iron_amount == village.warehouse_capacity
-        if village.crop_amount < village.granary_capacity:
-            village.crop_amount = F('crop_amount') + total_generation_rate.get('Crop', 0) / 1800
+        if total_generation_rate.get('Crop', 0) < 0:
+            village.crop_amount = F('crop_amount') - total_generation_rate.get('Crop', 0) / 1800
+            print(village.crop_amount)
         else:
-            village.crop_amount == village.granary_capacity
-
+            if village.crop_amount < village.granary_capacity:
+                village.crop_amount = F('crop_amount') + total_generation_rate.get('Crop', 0) / 1800
+            else:
+                village.crop_amount = village.granary_capacity
         village.save()
