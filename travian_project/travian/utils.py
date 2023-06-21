@@ -28,6 +28,9 @@ def calculate_total_generation_rate(village):
         troop_consumption = village_troop.troop.crop_consumption
         total_generation_rate['Crop'] -= village_troop.quantity * troop_consumption
 
+    population_consumption = village.population
+    total_generation_rate['Crop'] -= population_consumption
+
     return total_generation_rate
 
 
