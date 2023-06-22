@@ -33,5 +33,10 @@
             <p>If you already have an account, you can <a href="{% url 'login' %}">login</a> instead.</p>
         </form>
     </div>
+    <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
 </div>
 {% endblock content %}

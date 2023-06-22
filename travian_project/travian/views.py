@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from .forms import BuildingForm
+from .forms import BuildingForm, VillageCreationForm
 from collections import defaultdict
 from .models import User, Building, Resource, Village, VillageBuilding, Troop, VillageTroop
 from django.db.models import F
@@ -10,6 +10,21 @@ from .utils_views import *
 from .utils_tasks import *
 from decimal import Decimal
 import math
+
+@login_required
+def village_creation(request):
+    if request.method == 'POST':
+        form = VillageCreationForm(request.POST)
+        if form.is_valid():
+            village = form.save(commit=False)  # Create the village instance but don't save it yet
+            village.user = request.user  # Set the user
+            village.save()  # Save the village
+            return redirect('home')
+    else:
+        form = VillageCreationForm()
+
+    context = {'form': form}
+    return render(request, 'travian/village_creation.html', context)
 
 
 def add_building(request):

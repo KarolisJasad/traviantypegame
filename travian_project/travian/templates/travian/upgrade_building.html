@@ -6,24 +6,29 @@
     {% csrf_token %}
     {% with village=request.user.village.first %}
       {% if village %}
-        <input type="hidden" name="user_id" value="{{ user.id }}">
-        <input type="hidden" name="village_id" value="{{ village.id }}">
-        <ul class="messages">
+        {% if village.village_buildings.exists %}
+          <input type="hidden" name="user_id" value="{{ user.id }}">
+          <input type="hidden" name="village_id" value="{{ village.id }}">
+          <ul class="messages">
             {% for message in messages %}
               <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
             {% endfor %}
           </ul>
-        <select name="building_select">
-          {% for village_building in village.village_buildings.all %}
+          <select name="building_select">
+            {% for village_building in village.village_buildings.all %}
               <option value="{{ village_building.id }}">{{ village_building.building.name }} - Level: {{ village_building.level }} Cost: {{ building_cost.level_str }}</option>
-          {% endfor %}
-        </select>
-        <input type="submit" value="Submit">
+            {% endfor %}
+          </select>
+          <input type="submit" value="Submit">
+        {% else %}
+          <p>You don't have any buildings in your village. Build a building before upgrading.</p>
+        {% endif %}
       {% else %}
         <p>No village found for the current user.</p>
       {% endif %}
     {% endwith %}
   </form>
   {% if request.method == 'POST' %}
+    <!-- Handle the POST request if needed -->
   {% endif %}
 {% endblock %}

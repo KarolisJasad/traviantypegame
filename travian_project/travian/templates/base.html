@@ -7,38 +7,37 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/styles_s.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles_2.css' %}">
     <title>{% block title %} Travan {% endblock title %}</title>
 </head>
 <body>
     <div class="container">
         <header>
-            <ul class="nav">
-                <li class="logo"> <a href="{% url 'home' %}"> Travan </a></li>
-                <li> Resources </li>
-                <li> Village </li>
-                {% if user.is_staff or user.is_superuser %}
-                    <li><a href="{% url 'add_building' %}"> Add buildings </a></li>
-                    <li><a href="{% url 'build_resource' %}">Build Resources</a></li>
-                    <li><a href="{% url 'build_infrastructure'%}"> Build Infrastructure</a></li>
-                    <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
-                    <li><a href="{% url 'build_infantry' %}">Build Infantry building</a></li>
-                    <li><a href="{% url 'troop_building' %}">Build Infantry troops</a></li>
-                    <li><a href="{% url 'player_list' %}">Player list</a></li>
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                {% elif user.is_authenticated %}
-                    <li><a href="{% url 'build_resource' %}">Build Resources</a></li>
-                    <li><a href="{% url 'build_infrastructure'%}"> Build Infrastructure</a></li>
-                    <li><a href="{% url 'build_infantry' %}">Build Infantry building</a></li>
-                    <li><a href="{% url 'troop_building' %}">Build Infantry troops</a></li>
-                    <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
-                    <li><a href="{% url 'player_list' %}">Player list</a></li>
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'signup' %}"> Signup </a></li>
-                    <li><a href="{% url 'login' %}"> Login </a></li>
-                {% endif %}           
-            </ul>
+            {% if user.is_authenticated and village %}
+                <ul class="nav">
+                    <li class="logo"> <a href="{% url 'home' %}"> Travan </a></li>
+                    <li> Resources </li>
+                    <li> Village </li>
+                    {% if user.is_staff or user.is_superuser %}
+                        <li><a href="{% url 'add_building' %}"> Add buildings </a></li>
+                        <li><a href="{% url 'build_resource' %}">Build Resources</a></li>
+                        <li><a href="{% url 'build_infrastructure'%}"> Build Infrastructure</a></li>
+                        <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
+                        <li><a href="{% url 'build_infantry' %}">Build Infantry building</a></li>
+                        <li><a href="{% url 'troop_building' %}">Build Infantry troops</a></li>
+                        <li><a href="{% url 'player_list' %}">Player list</a></li>
+                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{% url 'build_resource' %}">Build Resources</a></li>
+                        <li><a href="{% url 'build_infrastructure'%}"> Build Infrastructure</a></li>
+                        <li><a href="{% url 'build_infantry' %}">Build Infantry building</a></li>
+                        <li><a href="{% url 'troop_building' %}">Build Infantry troops</a></li>
+                        <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
+                        <li><a href="{% url 'player_list' %}">Player list</a></li>
+                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                    {% endif %}           
+                </ul>
+            {% endif %}
         </header>
         {% if user.is_authenticated and village %}
             <div class="container">

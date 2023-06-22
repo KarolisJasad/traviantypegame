@@ -2,8 +2,11 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from user_profile.views import signup
 
 urlpatterns = [
+    path('', signup, name='signup'),
+    path('village/creation', views.village_creation, name='village_creation'),
     path('home/', views.home, name='home'),
     path('travian/add_building/', views.add_building, name='add_building'),
     path('travian/build_resource/', views.build_building, name='build_resource'),

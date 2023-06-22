@@ -12,7 +12,7 @@ User = get_user_model()
 def signup(request):
     if request.user.is_authenticated:
         messages.info(request, 'In order to sign up, you need to logout first')
-        return redirect('base')
+        return redirect('home')
     if request.method == "POST":
         error = False
         username = request.POST.get('username')
@@ -48,7 +48,10 @@ def user_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                if not user.village.exists():  # Check if there are any related villages for the user
+                    return redirect('village_creation')  # Assuming 'village_creation' is the name of the URL pattern for the village creation page
+                else:
+                    return redirect('home')  # Assuming 'home' is the name of the URL pattern for the home page
     else:
         form = AuthenticationForm(request)
 

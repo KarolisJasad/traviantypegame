@@ -3,37 +3,41 @@
 
 {% block content %}
 <div class="attack-form">
-    <h1> Selected target: </h1>
+  <h1>Selected target:</h1>
   <h2>User: {{ player.username }}</h2>
   <h2>Village: {{ attacked_village.name }}</h2>
 
   <!-- Display troop information -->
-  <h1> Your army: </h1>
-  {% for troop in troops %}
-    <p>{{ troop.troop.name }} - Total: {{ troop.quantity }}</p>
-  {% endfor %}
+  {% if troops %}
+    <h1>Your army:</h1>
+    {% for troop in troops %}
+      <p>{{ troop.troop.name }} - Total: {{ troop.quantity }}</p>
+    {% endfor %}
 
-  <form method="post">
-    {% csrf_token %}
-    <table>
+    <form method="post">
+      {% csrf_token %}
+      <table>
         <thead>
-            <tr>
-                {% for troop in troops %}
-                <th>{{ troop.troop.name }}</th>
-                {% endfor %}
-            </tr>
+          <tr>
+            {% for troop in troops %}
+              <th>{{ troop.troop.name }}</th>
+            {% endfor %}
+          </tr>
         </thead>
         <tbody>
-            <tr>
-                {% for troop in troops %}
-                <td>
-                    <input type="number" name="troop_quantity_{{ troop.id }}" min="0" max="{{ troop.quantity }}">
-                </td>
-                {% endfor %}
-            </tr>
+          <tr>
+            {% for troop in troops %}
+              <td>
+                <input type="number" name="troop_quantity_{{ troop.id }}" min="0" max="{{ troop.quantity }}">
+              </td>
+            {% endfor %}
+          </tr>
         </tbody>
-    </table>
-    <button type="submit">Initiate Attack</button>
-</form>
+      </table>
+      <button type="submit">Initiate Attack</button>
+    </form>
+  {% else %}
+    <p>You don't have any troops in your village. Build some troops before initiating an attack.</p>
+  {% endif %}
 </div>
 {% endblock %}
