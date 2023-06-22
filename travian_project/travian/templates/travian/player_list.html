@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="resources-table">
+<div class="player-list-table">
   <h2>Players</h2>
   <table>
     <thead>
@@ -15,7 +15,7 @@
     </thead>
     <tbody>
       {% for player in players %}
-      {% if player != request.user %}  {# Check if the player is not the currently logged-in user #}
+      {% if player != request.user %}
       <tr>
         <td>{{ player.username }}</td>
         <td>
@@ -37,5 +37,4 @@
     </tbody>
   </table>
 </div>
-
 {% endblock %}

@@ -15,6 +15,7 @@
           {% if troop.name != "Swordsman" or barracks_level >= 5%}
             <div class="building-block">
               <div class="troop">
+                <h3>{{ troop.name }}</h3>
                 <img src="{{ troop.picture.url }}" alt="{{ troop.name }}">
                 <p>{{ troop.description }}</p>
                 <label for="troop_quantity">Quantity:</label>

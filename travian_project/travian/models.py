@@ -5,6 +5,7 @@ from django.urls import reverse
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from PIL import Image
+from tinymce.models import HTMLField
 
 User = get_user_model()
 
@@ -42,7 +43,7 @@ class Building(models.Model):
     resource_generation_rate = models.JSONField(_("resource_generation_rate"),)
     building_cost = models.JSONField(_("building_cost"),)
     extra_attributes = models.JSONField(_("extra_attributes"), blank=True, null=True)
-    description = models.TextField(_("description"), max_length=1000, blank=True, null=True)
+    description = HTMLField(_("description"), max_length=1000, blank=True, null=True)
     picture = models.ImageField(_("picture"), upload_to="building_pictures", blank=True, null=True)
     
 

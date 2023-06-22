@@ -271,12 +271,13 @@ body, html {
       }
       .container-building {
         display: flex;
+        flex-wrap: wrap;
         justify-content: center;
-        align-items: center;
+        margin-bottom: 20px;
       }
     .building-block {
       width: 300px;
-      height: 500px;
+      height: 550px;
       margin: 10px;
       padding: 10px;
       border: 1px solid #ccc;
@@ -305,12 +306,43 @@ body, html {
     .building-block button:hover {
       background-color: #45a049;
     }
+      
+      .building-block-update {
+        flex: 0 0 calc(16.66% - 20px); /* Adjusted width to accommodate 6 blocks per row */
+        height: 160px;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: center;
+        background-color: white;
+      }
+      
+      .building-block-update img {
+        max-width: 100%;
+        max-height: 50px;
+      }
+      
+      .building-block-update p {
+        margin-bottom: 10px;
+      }
+      
+      .building-block-update button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .building-block-update button:hover {
+        background-color: #45a049;
+      }
     
     .attack-result {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
     }
     
     .attack-result-content {
@@ -359,3 +391,44 @@ body, html {
     text-align: center;
     margin-bottom: 10px;
     }
+
+    .player-list-table {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+    .player-list-table  h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      
+    .player-list-table  table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      
+    .player-list-table  th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+      
+    .player-list-table thead {
+        background-color: #f9f9f9;
+      }
+      
+    .player-list-table  tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      
+      .attack-link {
+        color: #007bff;
+        text-decoration: none;
+      }
+      
+      .attack-link:hover {
+        text-decoration: underline;
+      }

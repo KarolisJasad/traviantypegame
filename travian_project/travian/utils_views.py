@@ -27,7 +27,7 @@ def check_and_deduct_resources(selected_building, village, current_level):
         village.iron_amount -= iron_cost
         village.crop_amount -= crop_cost
         village.save()
-        return True
+        return building_costs
 
     return False
 

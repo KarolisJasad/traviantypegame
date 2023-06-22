@@ -35,6 +35,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'travian',
     'user_profile',
+    'tinymce',
     'django.contrib.humanize',
     'django_celery_results',
     'django_celery_beat',
@@ -155,4 +156,26 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'travian.tasks.update_resource_amount',
         'schedule': 2.0,  # Run every 60 seconds
     },
+}
+
+TINYMCE_DEFAULT_CONFIG = {
+    'height': 360,
+    'width': 1120,
+    'cleanup_on_startup': False,
+    'custom_undo_redo_levels': 20,
+    'plugins': '''
+            textcolor link image media preview codesample contextmenu
+            table code lists insertdatetime nonbreaking
+            directionality searchreplace wordcount visualblocks
+            visualchars autolink charmap print hr anchor pagebreak
+            ''',
+    'toolbar1': '''
+            bold italic underline | forecolor backcolor | alignleft alignright
+            aligncenter alignjustify | indent outdent | bullist numlist table |
+            | link anchor | image media | codesample |
+            visualblocks visualchars | charmap hr pagebreak nonbreaking | code |
+            ''',
+    'contextmenu': 'formats | link image',
+    'menubar': False,
+    'statusbar': True,
 }

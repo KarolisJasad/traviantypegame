@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
   <h1>Build Infantry</h1>
 
@@ -22,6 +21,7 @@
         {% for building in available_buildings %}
           {% if building.b_type == "Military" %}
             <div class="building-block">
+              <h3>{{ building.name }}</h3>
               <img src="{{ building.picture.url }}" alt="{{ building.name }}">
               <p>{{ building.description }}</p>
               <button type="submit" name="building_id" value="{{ building.id }}">Build</button>

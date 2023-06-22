@@ -2,6 +2,8 @@
 {% load static %}
 
 {% block content %}
+<div class="attack-result">
+<div class="attack-result-content">
 <div class="attack-form">
   <h1>Selected target:</h1>
   <h2>User: {{ player.username }}</h2>
@@ -39,5 +41,7 @@
   {% else %}
     <p>You don't have any troops in your village. Build some troops before initiating an attack.</p>
   {% endif %}
+</div>
+</div>
 </div>
 {% endblock %}

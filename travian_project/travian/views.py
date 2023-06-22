@@ -10,6 +10,7 @@ from .utils_views import *
 from .utils_tasks import *
 from decimal import Decimal
 import math
+from django.utils.safestring import mark_safe
 
 def home(request):
     return render(request, 'travian/home.html')
@@ -111,12 +112,13 @@ def build_infantry(request):
 @login_required
 def upgrade_building(request):
     if request.method == 'POST':
-        building_id = request.POST.get('building_select')
+        building_id = request.POST.get('building_id')
         if building_id:
             village_building = get_object_or_404(VillageBuilding, id=building_id)
             selected_building = village_building.building
             village = village_building.village
             current_level = village_building.level
+            next_level = current_level + 1
 
             if current_level >= 10:
                 messages.error(request, 'Building is already at its maximum level.')
@@ -132,8 +134,12 @@ def upgrade_building(request):
                 messages.success(request, 'Building successfully upgraded.')
             else:
                 messages.error(request, 'Insufficient resources to upgrade.')
+    
 
-    return render(request, 'travian/upgrade_building.html', {'messages': messages.get_messages(request)})
+    context = {
+        'messages': messages.get_messages(request),
+    }
+    return render(request, 'travian/upgrade_building.html', context)
 
 @login_required
 def troop_building(request):
