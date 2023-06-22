@@ -96,8 +96,67 @@ border-radius: 10px;
 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    height: 100vh;
+}
+
+.login-box {
+    max-width: 400px;
+    padding: 20px;
+    background-color: rgba(245, 245, 245, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-form {
+    margin-top: 20px;
+}
+
 .signup-form {
 margin-top: 20px;
+}
+
+.create-village-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    height: 100vh;
+}
+
+.create-village-box {
+    max-width: 400px;
+    padding: 20px;
+    background-color: rgba(245, 245, 245, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-village-form {
+    margin-top: 20px;
+}
+
+.goodbye-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    height: 100vh;
+}
+
+.goodbye-box {
+    max-width: 400px;
+    padding: 20px;
+    background-color: rgba(245, 245, 245, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {

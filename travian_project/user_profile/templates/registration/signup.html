@@ -13,6 +13,11 @@
         <form class="signup-form" action="{{ request.path }}" method="post">
             {% csrf_token %}
             <div class="form-group">
+                <ul class="messages">
+                    {% for message in messages %}
+                      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                  </ul>
                 <label for="username">Username</label>
                 <input type="text" name="username" required value="{{ request.POST.username }}" class="form-control">
                 <br><small>Case sensitive, must be unique.</small>
@@ -33,10 +38,5 @@
             <p>If you already have an account, you can <a href="{% url 'login' %}">login</a> instead.</p>
         </form>
     </div>
-    <ul class="messages">
-        {% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-      </ul>
 </div>
 {% endblock content %}

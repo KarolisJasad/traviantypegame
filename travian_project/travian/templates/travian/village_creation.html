@@ -2,12 +2,22 @@
 {% load static %}
 
 {% block content %}
-  <h2>Create Village</h2>
-  <form method="post">
-    {% csrf_token %}
-    <label for="id_village_name">Village Name:</label>
-    <input type="text" id="id_village_name" name="name" required>
-    <br>
-    <button type="submit">Create</button>
-  </form>
+<div class="create-village-container">
+    <div class="create-village-box">
+        <h2>Create Village</h2>
+        <form class="create-village-form" method="post">
+            {% csrf_token %}
+            <ul class="messages">
+                {% for message in messages %}
+                  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+              </ul>
+            <div class="form-group">
+                <label for="id_village_name">Village Name:</label>
+                <input type="text" id="id_village_name" name="name" required class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
