@@ -230,61 +230,45 @@ margin-left: 0;
 margin-right: 0;
 }
 
-.resources-table {
-margin-bottom: 40px;
-}
-
-.resources-table h2 {
-color: black;
-font-size: 24px;
-margin-bottom: 10px;
-}
-
-.resources-table table {
-width: 100%;
-border-collapse: collapse;
-}
-
-.resources-table th,
-.resources-table td {
-padding: 10px;
-text-align: center;
-}
-
-.resources-table th {
-background-color: #333;
-color: #fff;
-}
-
-.resources-table tbody tr:nth-child(even) {
-background-color: #f2f2f2;
-}
-
-.troops-table h2 {
-color: black;
-font-size: 24px;
-margin-bottom: 10px;
-}
-
-.troops-table table {
-width: 100%;
-border-collapse: collapse;
-}
-
-.troops-table th,
-.troops-table td {
-padding: 10px;
-text-align: center;
-}
-
-.troops-table th {
-background-color: #333;
-color: #fff;
-}
-
-.troops-table tbody tr:nth-child(even) {
-background-color: #f2f2f2;
-}
+.tables-container-home {
+    display: flex;
+  }
+  
+  .resources-table-home,
+  .troops-table-home {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .resources-table-home table,
+  .troops-table-home table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .resources-table-home th,
+  .resources-table-home td,
+  .troops-table-home th,
+  .troops-table-home td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid black;
+  }
+  
+  .resources-table-home th {
+    font-weight: bold;
+  }
+  
+  .resources-table-home tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .resources-table-home h2,
+  .troops-table-home h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
 
 .attack-result {
 display: flex;
