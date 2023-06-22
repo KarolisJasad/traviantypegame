@@ -13,6 +13,5 @@ urlpatterns = [
     path('travian/troop_building/', views.troop_building, name='troop_building'),
     path('travian/player_list', views.player_list, name='player_list'),
     path('attack/<int:player_id>/', views.attack_view, name='attack'),
-    path('attack/result/', views.attack_view, name='attack_result'),
 ] + (static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) +  
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))

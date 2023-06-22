@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="attack-result">
+  <h1>Attack Result</h1>
+  <h2>You've attacked {{ attacked_village.name }}</h2>
+
+  <h3>Attacker Troops</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Troop</th>
+        {% for troop in selected_troops %}
+        <th>{{ troop.troop.name }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Troops Sent</td>
+        {% for troop, quantity in selected_troops.items %}
+          <td>{{ quantity }}</td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <td>Casualties</td>
+        {% for troop in casualties %}
+          <td>{{ troop }}</td>
+        {% endfor %}
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Attacker Total Power: {{ attacker_total_attack_power }}</p>
+  <p>Total Carrying Capacity: {{ total_carrying_capacity }}</p>
+  <p>Wood: {{ wood_amount|floatformat:"-1" }} | Clay: {{ clay_amount|floatformat:"-1" }} | Iron: {{ iron_amount|floatformat:"-1" }} | Crop: {{ crop_amount|floatformat:"-1" }}</p>
+  <p>Stolen: {{ total_stolen_amount|floatformat:"-1" }}/{{ total_carrying_capacity }}</p>
+  <h3>Defender Troops</h3>
+  {% if original_deffender %}
+    <table>
+      <thead>
+        <tr>
+          <th>Troop</th>
+          {% for troop in original_deffender %}
+          <th>{{ troop }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Troops Defending</td>
+          {% if defender_troops%}
+          {% else %}
+          {% for troop in original_deffender %}
+            <td>{{ troop.quantity }}</td>
+          {% endfor %}
+          {%endif%}
+        </tr>
+        <tr>
+          <td>Casualties</td>
+          {% if defender_troops%}
+          {% else %}
+          {% for troop in original_deffender %}
+            <td>{{ troop.quantity }}</td>
+          {% endfor %}
+          {%endif%}
+        </tr>
+      </tbody>
+    </table>
+  {% else %}
+    <p>No defender troops found.</p>
+  {% endif %}
+
+  <p>Defender Total Power: {{ defender_total_defense_power }}</p>
+</div>
+{% endblock%}
