@@ -119,6 +119,7 @@ class Troop(models.Model):
     t_type = models.CharField(_("t_type"), max_length=50, choices=TROOP_TYPE_CHOICES, blank=True, null=True)
     attack = models.PositiveIntegerField(_("attack"), default=0)
     defense = models.PositiveIntegerField(_("defense"), default=0)
+    cavalry_defense = models.PositiveIntegerField(_("cavalry_defense"), default=0)
     carrying_capacity = models.PositiveIntegerField(_("carrying_capacityi"), default=0)
     crop_consumption = models.PositiveIntegerField(_("crop_consumption"), default=0)
     construction_cost = models.JSONField(_("construction_cost"), blank=True, null=True)

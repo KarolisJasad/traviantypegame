@@ -167,18 +167,21 @@ def player_list(request):
     return render(request, 'travian/player_list.html', context)
 
 
+def calculate_survival_percentage(attacker_attack_power, defender_defense_power, exponent):
+    power_difference = attacker_attack_power - defender_defense_power
+    if power_difference >= 0:
+        return 1.0
+    else:
+        survival_percentage = (1 - abs(power_difference) / defender_defense_power) ** exponent
+        return survival_percentage
 
-def calculate_survival_percentage(attack_power, defense_power, constant):
-    x = (attack_power / defense_power) * constant
-    survival_percentage = 1 / (1 + math.exp(-x))
-    return survival_percentage
 
 def attack_view(request, player_id):
     player = get_object_or_404(User, id=player_id)
     attacked_village = player.village.first()  # Assuming a player has only one village, retrieve the first village
     logged_village = get_object_or_404(Village, user=request.user)
     troops = logged_village.village_troops.all()  # Fetch troops associated with the village
-    defender_troops = attacked_village.village_troops.all()  # Fetch defender's troops
+    defender_troops = attacked_village.village_troops.all()
 
     if request.method == 'POST':
         selected_troops = {}  # Store the selected troop quantities
@@ -189,30 +192,44 @@ def attack_view(request, player_id):
             selected_troops[troop] = quantity
             total_carrying_capacity += troop.troop.carrying_capacity * quantity
 
-
-        selected_troops_ids = []
-        for troop, quantity in selected_troops.items():
-            if quantity > 0:
-                selected_troops_ids.extend([troop.id] * quantity)  # Append the troop ID multiple times based on the selected quantity
-                troop.quantity -= quantity  # Subtract the selected quantity from the troop's current quantity
-                troop.save()      
         # Calculate the attacker's total attack power
-        attacker_attack_power = 0
-        for troop, quantity in selected_troops.items():
-            attacker_attack_power += troop.troop.attack * quantity
-
+        attacker_cavalry_attack_power = sum(troop.troop.attack * quantity for troop, quantity in selected_troops.items() if troop.troop.t_type == 'Cavalry')
+        attacker_infantry_attack_power = sum(troop.troop.attack * quantity for troop, quantity in selected_troops.items() if troop.troop.t_type == 'Infantry')
+        attacker_total_attack_power = attacker_cavalry_attack_power + attacker_infantry_attack_power
+        print(attacker_total_attack_power)
         # Calculate the defender's total defense power
-        defender_defense_power = 1
-        for defender_troop in defender_troops:
-            defender_defense_power += defender_troop.troop.defense * defender_troop.quantity
+        defender_cavalry_defense_power = sum(defender_troop.troop.cavalry_defense * defender_troop.quantity for defender_troop in defender_troops)
+        defender_infantry_defense_power = sum(defender_troop.troop.defense * defender_troop.quantity for defender_troop in defender_troops)
+        defender_total_defense_power = (defender_cavalry_defense_power * (attacker_cavalry_attack_power / attacker_total_attack_power)) + (defender_infantry_defense_power * (attacker_infantry_attack_power / attacker_total_attack_power))
+        print(defender_total_defense_power)
+        # Computation of the winner and loser
+        if attacker_total_attack_power >= defender_total_defense_power:
+            # Attacker wins
+            loser_strength = defender_total_defense_power
+            winner_strength = attacker_total_attack_power
+            loser_troops = defender_troops
+            winner_troops = selected_troops
+            loser_survival_percentage = 0.0  # All defender's troops are lost
+            winner_casualties_percent = ((loser_strength / winner_strength) ** 1.5) * 100
+            print(winner_casualties_percent)
+        else:
+            # Defender wins
+            loser_strength = attacker_total_attack_power
+            winner_strength = defender_total_defense_power
+            loser_troops = selected_troops
+            winner_troops = {}
+            for troop in defender_troops:
+                winner_troops[troop] = troop.quantity
 
-        # Calculate the survival percentage for the attacker's troops
-        attacker_survival_percentage = calculate_survival_percentage(attacker_attack_power, defender_defense_power, 0.3)
+            print("Winner troops:")
+            print(winner_troops)
+            print(defender_troops)
+            winner_casualties_percent = ((loser_strength / winner_strength) ** 1.5) * 100
+            loser_survival_percentage = 0.0  # All attacker's troops are lost
+            print(winner_casualties_percent)
 
-        # Calculate the survival percentage for the defender's troops
-        defender_survival_percentage = calculate_survival_percentage(defender_defense_power, attacker_attack_power, 0.3)
         # Update the attacker's village resources based on the outcome
-        if attacker_attack_power > defender_defense_power:
+        if attacker_total_attack_power > defender_total_defense_power:
             # Attacker wins
 
             # Calculate the stolen resource amounts
@@ -238,14 +255,16 @@ def attack_view(request, player_id):
             logged_village.clay_amount += clay_amount
             logged_village.iron_amount += iron_amount
             logged_village.crop_amount += crop_amount
+            logged_village.save()
 
             # Apply survival percentage to the attacker's troops
             for troop, quantity in selected_troops.items():
-                surviving_quantity = math.ceil(quantity * attacker_survival_percentage)
-                troop.quantity += surviving_quantity
+                surviving_quantity = math.ceil(quantity * (1 - winner_casualties_percent / 100))
+                remaining_quantity = max(surviving_quantity, 0)  # Ensure the quantity doesn't go below zero
+                dead_troops = quantity - remaining_quantity
+                troop.quantity = troop.quantity - dead_troops
                 troop.save()
 
-            # Remove all troops from the defender's village
             defender_troops.delete()
             return render(request, 'travian/attack_result.html', {'attacked_village': attacked_village, 'player_id': player_id, 'wood_amount': wood_amount, 'clay_amount': clay_amount, 'iron_amount': iron_amount, 'crop_amount': crop_amount, 'total_carrying_capacity': total_carrying_capacity, 'total_stolen_amount': total_stolen_amount})
 
@@ -253,14 +272,19 @@ def attack_view(request, player_id):
             # Defender wins
 
             # Apply survival percentage to the defender's troops
-            for defender_troop in defender_troops:
-                surviving_quantity = math.ceil(defender_troop.quantity * defender_survival_percentage)
-                defender_troop.quantity = surviving_quantity
-                defender_troop.save()
+            for troop, quantity in winner_troops.items():
+                surviving_quantity = math.ceil(troop.quantity * (1 - winner_casualties_percent / 100))
+                remaining_quantity = max(surviving_quantity, 0)  # Ensure the quantity doesn't go below zero
+                dead_troops = quantity - remaining_quantity
+                print(dead_troops)
+                troop.quantity = troop.quantity - dead_troops
+                troop.save()
+            
+            for troop, quantity in loser_troops.items():
+                troop.quantity -= quantity
+                troop.save()
 
-            # Remove all troops from the attacker's village
-            troop.quantity -= quantity  # Subtract the selected quantity from the troop's current quantity
-            troop.save()
+
 
         logged_village.wood_amount = min(logged_village.wood_amount, logged_village.warehouse_capacity)
         logged_village.clay_amount = min(logged_village.clay_amount, logged_village.warehouse_capacity)
@@ -273,8 +297,8 @@ def attack_view(request, player_id):
 
         # Redirect to a new page showing the information
         return render(request, 'travian/attack_result.html', {'attacked_village': attacked_village, 'player_id': player_id})
+    
     return render(request, 'travian/attack.html', {'player': player, 'attacked_village': attacked_village, 'troops': troops})
-
 
 def generate_building_name(building, count):
     return f"{building.name} {count}"

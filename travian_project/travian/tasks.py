@@ -22,9 +22,8 @@ def update_resource_amount():
             village.iron_amount = F('iron_amount') + total_generation_rate.get('Iron_mine', 0) / 1800
         else:
             village.iron_amount == village.warehouse_capacity
-        if total_generation_rate.get('Crop', 0) < 0:
+        if total_generation_rate.get('Crop', 0) <= 0:
             village.crop_amount = F('crop_amount') - total_generation_rate.get('Crop', 0) / 1800
-            print(village.crop_amount)
         else:
             if village.crop_amount < village.granary_capacity:
                 village.crop_amount = F('crop_amount') + total_generation_rate.get('Crop', 0) / 1800
