@@ -4,31 +4,34 @@
   <h1>Build Infantry</h1>
 
   {% if request.user.village.exists %}
-    <form method="POST" id="build-form">
-      {% csrf_token %}
-      {% with village=request.user.village.first %}
-        <input type="hidden" name="user_id" value="{{ user.id }}">
-        <input type="hidden" name="village_id" value="{{ village.id }}">
-      {% endwith %}
-      {% if messages %}
-        <ul class="messages">
-          {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-      <label for="building">Select a building:</label>
-      <select name="building_id" id="building">
+    <div class="container">
+      <form method="POST" id="build-form">
+        {% csrf_token %}
+        {% with village=request.user.village.first %}
+          <input type="hidden" name="user_id" value="{{ user.id }}">
+          <input type="hidden" name="village_id" value="{{ village.id }}">
+        {% endwith %}
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <div class="container-building">
         {% for building in available_buildings %}
           {% if building.b_type == "Military" %}
-            <option value="{{ building.id }}">{{ building.name }} - Level {{ building.level }} - Cost: {{ building.cost }}</option>
+            <div class="building-block">
+              <img src="{{ building.picture.url }}" alt="{{ building.name }}">
+              <p>{{ building.description }}</p>
+              <button type="submit" name="building_id" value="{{ building.id }}">Build</button>
+            </div>
           {% endif %}
         {% endfor %}
-      </select>
-      <button type="submit">Build</button>
-    </form>
-
+          </div>
+      </form>
+    </div>
   {% else %}
     <p>No village found for the current user.</p>
   {% endif %}
-{%endblock%}
+{% endblock %}

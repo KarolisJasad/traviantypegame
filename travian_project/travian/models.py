@@ -128,7 +128,8 @@ class Troop(models.Model):
     crop_consumption = models.PositiveIntegerField(_("crop_consumption"), default=0)
     construction_cost = models.JSONField(_("construction_cost"), blank=True, null=True)
     construction_time = models.JSONField(_("construction_time"), blank=True, null=True)
-    
+    description = models.TextField(_("description"), max_length=1000, blank=True, null=True)
+    picture = models.ImageField(_("picture"), upload_to="building_pictures", blank=True, null=True)    
 
     class Meta:
         verbose_name = _("troop")

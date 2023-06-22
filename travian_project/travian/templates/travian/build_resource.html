@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Build a Building</h1>
+  <h1>Build Resources</h1>
 
   {% if request.user.village.exists %}
     <form method="POST" id="build-form">
@@ -10,24 +10,24 @@
         <input type="hidden" name="user_id" value="{{ user.id }}">
         <input type="hidden" name="village_id" value="{{ village.id }}">
       {% endwith %}
-      {% if messages %}
-        <ul class="messages">
-          {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      <div class="container-building">
       {% for building in available_buildings %}
         {% if building.b_type == "Resource" %}
           <div class="building-block">
-            <img src="{{ building.picture }}" alt="{{ building.name }}">
+            
+            <img src="{{ building.picture.url }}" alt="{{ building.name }}">
             <h3>{{ building.name }}</h3>
             <p>{{ building.description }}</p>
             <button type="submit" name="building_id" value="{{ building.id }}">Build</button>
           </div>
         {% endif %}
       {% endfor %}
+        </div>
     </form>
   {% else %}
     <p>No village found for the current user.</p>

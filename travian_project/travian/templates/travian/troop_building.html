@@ -7,27 +7,35 @@
     <h3>Barracks Level: {{ barracks_level }}</h3>
     <h3>Stable Level: {{ stable_level }}</h3>
 
-    <form method="POST" action="{% url 'troop_building' %}">
+      <form method="POST" action="{% url 'troop_building' %}">
+        <div class="container-building">
         {% csrf_token %}
-        <label for="troop_select">Select Troop:</label>
-        <select name="troop_id" id="troop_select">
-          {% for troop in available_troops %}
-            <option value="{{ troop.id }}">{{ troop.name }}</option>
-          {% endfor %}
-        </select>
-      
-        <label for="troop_quantity">Quantity:</label>
-        <input type="number" name="quantity" id="troop_quantity" value="1" min="1">
-      
-        <button type="submit">Build Troops</button>
-        {% if messages %}
+        {% for troop in available_troops %}
+          {% if troop.name != "Druidrider" or stable_level >= 5 %}
+          {% if troop.name != "Swordsman" or barracks_level >= 5%}
+            <div class="building-block">
+              <div class="troop">
+                <img src="{{ troop.picture.url }}" alt="{{ troop.name }}">
+                <p>{{ troop.description }}</p>
+                <label for="troop_quantity">Quantity:</label>
+                <input type="number" name="quantity_{{ troop.id }}" id="troop_quantity" value="0" min="0">
+                <button type="submit" name="troop_id" value="{{ troop.id }}">Build Troops</button>
+              </div>
+            </div>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </form>
+    </div>
+
+      {% if messages %}
         <ul class="messages">
           {% for message in messages %}
             <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
           {% endfor %}
         </ul>
       {% endif %}
-      </form>
+    </form>
   {% else %}
     <p>Barracks or stable building is not yet built in the village.</p>
   {% endif %}

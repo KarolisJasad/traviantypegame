@@ -143,29 +143,27 @@ def troop_building(request):
     stable_level = village.village_buildings.get(building=stable).level if village.village_buildings.filter(building=stable).exists() else 0
     barracks_level = village.village_buildings.get(building=barracks).level if village.village_buildings.filter(building=barracks).exists() else 0
     available_troops = Troop.objects.all()
+
     if request.method == 'POST':
         selected_troop_id = request.POST.get('troop_id')
-        quantity = int(request.POST.get('quantity', 0))
+        quantity = int(request.POST.get(f'quantity_{selected_troop_id}', 0))
 
-        try:
-            selected_troop = Troop.objects.get(id=selected_troop_id)
-            total_cost = calculate_troop_cost(selected_troop.construction_cost, quantity)
-        except Troop.DoesNotExist:
-            messages.error(request, 'Selected troop does not exist')
-            return redirect(reverse('troop_building'))
+        if quantity > 0:
+            try:
+                selected_troop = Troop.objects.get(id=selected_troop_id)
+                total_cost = calculate_troop_cost(selected_troop.construction_cost, quantity)
 
-        if quantity <= 0:
-            messages.error(request, 'Wrong quantity selected')
-            return redirect(reverse('troop_building'))
+                if not check_village_resources(total_cost, village):
+                    messages.error(request, 'Insufficient resources to build troops.')
+                    return redirect(reverse('troop_building'))
 
-        if not check_village_resources(total_cost, village):
-            messages.error(request, 'Insufficient resources to build troops.')
-            return redirect(reverse('troop_building'))
-
-        deduct_resources(total_cost, village)
-        village_troop, _ = VillageTroop.objects.get_or_create(village=village, troop=selected_troop)
-        village_troop.quantity += quantity
-        village_troop.save()
+                deduct_resources(total_cost, village)
+                village_troop, _ = VillageTroop.objects.get_or_create(village=village, troop=selected_troop)
+                village_troop.quantity += quantity
+                village_troop.save()
+            except Troop.DoesNotExist:
+                messages.error(request, 'Selected troop does not exist')
+                return redirect(reverse('troop_building'))
 
         return redirect(reverse('troop_building'))
 
