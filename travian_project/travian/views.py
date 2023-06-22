@@ -190,7 +190,7 @@ def attack_view(request, player_id):
         for troop in troops:
             quantity = int(request.POST.get(f'troop_quantity_{troop.id}', 0))
             selected_troops[troop] = quantity
-            total_carrying_capacity += troop.troop.carrying_capacity * quantity
+            
 
         # Calculate the attacker's total attack power
         attacker_cavalry_attack_power = sum(troop.troop.attack * quantity for troop, quantity in selected_troops.items() if troop.troop.t_type == 'Cavalry')
@@ -232,6 +232,15 @@ def attack_view(request, player_id):
         if attacker_total_attack_power > defender_total_defense_power:
             # Attacker wins
 
+            # Apply survival percentage to the attacker's troops
+            for troop, quantity in selected_troops.items():
+                surviving_quantity = math.ceil(quantity * (1 - winner_casualties_percent / 100))
+                remaining_quantity = max(surviving_quantity, 0)  # Ensure the quantity doesn't go below zero
+                dead_troops = quantity - remaining_quantity
+                troop.quantity = troop.quantity - dead_troops
+                troop.save()
+                total_carrying_capacity += troop.troop.carrying_capacity * remaining_quantity
+            
             # Calculate the stolen resource amounts
             wood_amount = total_carrying_capacity / 4
             clay_amount = total_carrying_capacity / 4
@@ -256,14 +265,6 @@ def attack_view(request, player_id):
             logged_village.iron_amount += iron_amount
             logged_village.crop_amount += crop_amount
             logged_village.save()
-
-            # Apply survival percentage to the attacker's troops
-            for troop, quantity in selected_troops.items():
-                surviving_quantity = math.ceil(quantity * (1 - winner_casualties_percent / 100))
-                remaining_quantity = max(surviving_quantity, 0)  # Ensure the quantity doesn't go below zero
-                dead_troops = quantity - remaining_quantity
-                troop.quantity = troop.quantity - dead_troops
-                troop.save()
 
             defender_troops.delete()
             return render(request, 'travian/attack_result.html', {'attacked_village': attacked_village, 'player_id': player_id, 'wood_amount': wood_amount, 'clay_amount': clay_amount, 'iron_amount': iron_amount, 'crop_amount': crop_amount, 'total_carrying_capacity': total_carrying_capacity, 'total_stolen_amount': total_stolen_amount})
