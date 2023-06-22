@@ -270,6 +270,45 @@ margin-right: 0;
     margin-bottom: 10px;
   }
 
+  .building-block {
+    display: inline-block;
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+  
+  .building-block img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+  
+  .building-block h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+  
+  .building-block p {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .building-block button {
+    background-color: #4caf50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .building-block button:hover {
+    background-color: #45a049;
+  }
+
 .attack-result {
 display: flex;
 justify-content: center;

@@ -17,15 +17,17 @@
           {% endfor %}
         </ul>
       {% endif %}
-      <label for="building">Select a building:</label>
-      <select name="building_id" id="building">
-        {% for building in available_buildings %}
-          {% if building.b_type == "Resource" %}
-            <option value="{{ building.id }}">{{ building.name }} - Level {{ building.level }} - Cost: {{ building.cost }}</option>
-          {% endif %}
-        {% endfor %}
-      </select>
-      <button type="submit">Build</button>
+
+      {% for building in available_buildings %}
+        {% if building.b_type == "Resource" %}
+          <div class="building-block">
+            <img src="{{ building.picture }}" alt="{{ building.name }}">
+            <h3>{{ building.name }}</h3>
+            <p>{{ building.description }}</p>
+            <button type="submit" name="building_id" value="{{ building.id }}">Build</button>
+          </div>
+        {% endif %}
+      {% endfor %}
     </form>
   {% else %}
     <p>No village found for the current user.</p>

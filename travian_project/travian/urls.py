@@ -8,7 +8,6 @@ urlpatterns = [
     path('', signup, name='signup'),
     path('village/creation', views.village_creation, name='village_creation'),
     path('home/', views.home, name='home'),
-    path('travian/add_building/', views.add_building, name='add_building'),
     path('travian/build_resource/', views.build_building, name='build_resource'),
     path('travian/upgrade_building/', views.upgrade_building, name='upgrade_building'),
     path('travian/build_infrastructure', views.build_infrastructure, name='build_infrastructure'),

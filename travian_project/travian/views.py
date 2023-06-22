@@ -11,6 +11,9 @@ from .utils_tasks import *
 from decimal import Decimal
 import math
 
+def home(request):
+    return render(request, 'travian/home.html')
+
 @login_required
 def village_creation(request):
     if request.method == 'POST':
@@ -26,40 +29,32 @@ def village_creation(request):
     context = {'form': form}
     return render(request, 'travian/village_creation.html', context)
 
-
-def add_building(request):
-    if request.method == 'POST':
-        form = BuildingForm(request.POST)
-        if form.is_valid():
-            building = form.save()
-            return redirect(reverse('add_building'))
-    else:
-        form = BuildingForm()
-    return render(request, 'travian/add_building.html', {'form': form})
-
-def home(request):
-    return render(request, 'travian/home.html')
-
 @login_required
 def build_building(request):
     if request.method == 'POST':
-        building_id = request.POST.get('building_id')
-        selected_building = get_object_or_404(Building, id=building_id)
+        building_ids = request.POST.getlist('building_id')  # Get the selected building IDs as a list
         village = get_object_or_404(Village, user=request.user)
-        error_message = validate_building_constraints(selected_building, village)
+        messages_list = []
 
-        if error_message:
-            messages.error(request, error_message)
-        else:
-            if check_and_deduct_resources(selected_building, village, 0):
-                existing_building_count = village.village_buildings.filter(building=selected_building).count()
-                new_name = generate_building_name(selected_building, existing_building_count + 1)
-                resource = create_resource(selected_building, village)
-                create_village_building(village, selected_building, resource, new_name)
-                update_population(village)
-                messages.success(request, 'Building successfully constructed.')
+        for building_id in building_ids:
+            selected_building = get_object_or_404(Building, id=building_id)
+            error_message = validate_building_constraints(selected_building, village)
+
+            if error_message:
+                messages_list.append(error_message)
             else:
-                messages.error(request, 'Insufficient resources to build.')
+                if check_and_deduct_resources(selected_building, village, 0):
+                    existing_building_count = village.village_buildings.filter(building=selected_building).count()
+                    new_name = generate_building_name(selected_building, existing_building_count + 1)
+                    resource = create_resource(selected_building, village)
+                    create_village_building(village, selected_building, resource, new_name)
+                    update_population(village)
+                    messages_list.append('Building successfully constructed.')
+                else:
+                    messages_list.append('Insufficient resources to build.')
+
+        for message in messages_list:
+            messages.success(request, message)
 
         return redirect(reverse('build_resource'))
 
