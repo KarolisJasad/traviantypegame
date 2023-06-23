@@ -236,8 +236,6 @@ def attack_view(request, player_id):
             # Attacker wins
             dead_troops_list = []
             for troop, quantity in selected_troops.items():
-                surviving_quantity = math.ceil(quantity * (1 - winner_casualties_percent / 100))
-                # Ensure the quantity doesn't go below zero
                 remaining_quantity = max(surviving_quantity, 0)
                 dead_troops = quantity - remaining_quantity
                 dead_troops_list.append(dead_troops)

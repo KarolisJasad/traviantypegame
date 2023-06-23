@@ -139,3 +139,5 @@ def update_village_resource_capacity(selected_building, village_building):
         village_building.village.save()
 
 
+
+

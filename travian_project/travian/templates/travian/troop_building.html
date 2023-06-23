@@ -7,36 +7,36 @@
     <h3>Barracks Level: {{ barracks_level }}</h3>
     <h3>Stable Level: {{ stable_level }}</h3>
 
-      <form method="POST" action="{% url 'troop_building' %}">
-        <div class="container-building">
+    <form method="POST" action="{% url 'troop_building' %}">
+      <div class="container-building">
         {% csrf_token %}
         {% for troop in available_troops %}
           {% if troop.name != "Druidrider" or stable_level >= 5 %}
-          {% if troop.name != "Swordsman" or barracks_level >= 5%}
+          {% if troop.name != "Swordsman" or barracks_level >= 5 %}
             <div class="building-block">
               <div class="troop">
                 <h3>{{ troop.name }}</h3>
                 <img src="{{ troop.picture.url }}" alt="{{ troop.name }}">
                 <p>{{ troop.description }}</p>
+                <p>Unit Cost: {% for resource, value in troop.unit_cost_print.items %}{{ resource }}: {{ value }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
                 <label for="troop_quantity">Quantity:</label>
                 <input type="number" name="quantity_{{ troop.id }}" id="troop_quantity" value="0" min="0">
                 <button type="submit" name="troop_id" value="{{ troop.id }}">Build Troops</button>
               </div>
             </div>
-            {% endif %}
+          {% endif %}
           {% endif %}
         {% endfor %}
-      </form>
-    </div>
-
-      {% if messages %}
-        <ul class="messages">
-          {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
+      </div>
     </form>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
   {% else %}
     <p>Barracks or stable building is not yet built in the village.</p>
   {% endif %}

@@ -24,6 +24,7 @@
               <h3>{{ building.name }}</h3>
               <img src="{{ building.picture.url }}" alt="{{ building.name }}">
               <p>{{ building.description }}</p>
+              <p>Unit Cost: {% for resource, value in building.building_cost_print.items %}{{ resource }}: {{ value }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
               <button type="submit" name="building_id" value="{{ building.id }}">Build</button>
             </div>
           {% endif %}

@@ -20,13 +20,13 @@
               <div class="building-block-update">
                 <img src="{{ village_building.building.picture.url }}" alt="{{ village_building.building.name }}">
                 <p>{{ village_building.building.name }} - Level: {{ village_building.level }}</p>
-                  {% with next_level=village_building.level|add:1 %}
+                {% with next_level=village_building.level|add:1 %}
                   {% if next_level == 11 %}
-                    This building is already at its maximum level.
+                    <p>This building is already at its maximum level.</p>
                   {% else %}
-                    <p>Cost to upgrade to Level {{ next_level }}: Upgrade Cost:  </p>
-                  {% endif%}
-                    {% endwith %}
+                    <p>Building Cost: {% for resource, value in village_building.building.get_building_cost(next_level) %}{{ resource }}: {{ value }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                  {% endif %}
+                {% endwith %}
                 <button type="submit" name="building_id" value="{{ village_building.id }}">Upgrade</button>
               </div>
             {% endfor %}
