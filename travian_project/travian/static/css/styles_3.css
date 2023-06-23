@@ -23,40 +23,50 @@ body, html {
     padding: 10px;
     }
     
-    .nav {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    }
-    
-    .res-nav {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    background-color: rgba(135, 206, 250, 0.6);
-    }
+    /* Navigation Bar */
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f2f2f2;
+  padding: 10px;
+}
+
+.navbar a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+/* Resource Navigation */
+.container {
+  text-align: center;
+}
+
+.resource-nav {
+  display: inline;
+  background-color: #f2f2f2;
+  padding: 10px;
+  list-style: none;
+  margin: 0;
+}
+
+.resource-nav li {
+  display: inline;
+  margin: 0 10px;
+  color: #333;
+}
     
     .logo {
     font-size: 24px;
     font-weight: bold;
     color: #ffffff; /* White text color */
     margin-right: 20px;
-    }
-    
-    .nav li {
-    margin-right: 10px;
-    color: #ffffff; /* White text color */
-    font-size: 16px;
-    }
-    
-    .res-nav li {
-    margin-right: 10px;
-    color: #ffffff; /* White text color */
-    font-size: 16px;
     }
     
     footer {
