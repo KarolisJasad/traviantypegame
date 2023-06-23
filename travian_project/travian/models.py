@@ -64,7 +64,6 @@ class Building(models.Model):
         return self.building_cost.get("1", {})
     
 
-
 class Village(models.Model):
     user = models.ForeignKey(
         User,
@@ -120,6 +119,8 @@ class Resource(models.Model):
     class Meta:
         verbose_name = _("resource")
         verbose_name_plural = _("resources")
+    
+    
 
     def get_absolute_url(self):
         return reverse("resource_detail", kwargs={"pk": self.pk})
