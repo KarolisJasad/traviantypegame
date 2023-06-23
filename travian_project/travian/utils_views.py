@@ -1,4 +1,4 @@
-from .models import Village, Resource, Building, VillageBuilding
+from .models import Resource, VillageBuilding
 
 
 def validate_building_constraints(building, village):

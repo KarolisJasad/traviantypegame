@@ -19,10 +19,9 @@ def village_creation(request):
     if request.method == 'POST':
         form = VillageCreationForm(request.POST)
         if form.is_valid():
-            # Create the village instance but don't save it yet
             village = form.save(commit=False)
-            village.user = request.user  # Set the user
-            village.save()  # Save the village
+            village.user = request.user 
+            village.save()  
             return redirect('home')
     else:
         form = VillageCreationForm()
@@ -123,7 +122,6 @@ def upgrade_building(request):
             selected_building = village_building.building
             village = village_building.village
             current_level = village_building.level
-            next_level = current_level + 1
 
             if current_level >= 10:
                 messages.error(request, 'Building is already at its maximum level.')
@@ -189,10 +187,10 @@ def player_list(request):
 
 def attack_view(request, player_id):
     player = get_object_or_404(User, id=player_id)
-    # Assuming a player has only one village, retrieve the first village
+    # Retrieve the first village
     attacked_village = player.village.first()
     logged_village = get_object_or_404(Village, user=request.user)
-    # Fetch troops associated with the village
+    # Get troops associated with the village
     troops = logged_village.village_troops.all()
     defender_troops = attacked_village.village_troops.all()
     original_defender_troops = list(defender_troops)

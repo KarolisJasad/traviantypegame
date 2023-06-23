@@ -30,7 +30,7 @@
           <tr>
             {% for troop in troops %}
               <td>
-                <input type="number" name="troop_quantity_{{ troop.id }}" min="0" max="{{ troop.quantity }}">
+                <input type="number" name="troop_quantity_{{ troop.id }}" min="0" value="0" max="{{ troop.quantity }}">
               </td>
             {% endfor %}
           </tr>

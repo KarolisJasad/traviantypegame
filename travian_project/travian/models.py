@@ -3,10 +3,8 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from decimal import Decimal
-from django.core.exceptions import ValidationError
 from PIL import Image
-from tinymce.models import HTMLField
-import json
+
 
 User = get_user_model()
 
