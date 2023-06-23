@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from PIL import Image
 from tinymce.models import HTMLField
+import json
 
 User = get_user_model()
 
@@ -56,6 +57,14 @@ class Building(models.Model):
 
     def get_absolute_url(self):
         return reverse("building_detail", kwargs={"pk": self.pk})
+    
+    def building_cost_print(self):
+        building_cost = self.building_cost
+        cost_print = []
+        for resource, amount in building_cost.items():
+            cost_print.append(f"{resource}: {amount}")
+        return self.building_cost.get("1", {})
+    
 
 
 class Village(models.Model):
@@ -138,6 +147,13 @@ class Troop(models.Model):
     def __str__(self):
         return self.name
 
+    def unit_cost_print(self):
+        construction_cost = self.construction_cost
+        cost_print = []
+        for resource, amount in construction_cost.items():
+            cost_print.append(f"{resource}: {amount}")
+        return self.construction_cost.get("1", {})
+
     def get_absolute_url(self):
         return reverse("troop_detail", kwargs={"pk": self.pk})
 
@@ -165,6 +181,14 @@ class VillageBuilding(models.Model):
 
     class Meta:
         ordering = ['name']
+
+    def building_cost_print(self):
+        next_level = self.level + 1
+        building_cost = self.building.building_cost.get(str(next_level), {})
+        cost_print = []
+        for resource, amount in building_cost.items():
+            cost_print.append(f"{resource}: {amount}")
+        return building_cost
 
     def __str__(self):
         return f"{self.village} - {self.building}"
