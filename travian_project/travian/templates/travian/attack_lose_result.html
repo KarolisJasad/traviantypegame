@@ -3,6 +3,7 @@
 
 {% block content %}
 <div class="attack-result">
+  <div class="attack-result-content">
   <h1>Attack Result</h1>
   <h2>You've attacked {{ attacked_village.name }}</h2>
 
@@ -70,5 +71,6 @@
   {% endif %}
 
   <p>Defender Total Power: {{ deffender_total_attack_power }}</p>
+</div>
 </div>
 {% endblock %}

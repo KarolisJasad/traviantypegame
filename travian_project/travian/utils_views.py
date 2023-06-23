@@ -1,5 +1,6 @@
 from .models import Village, Resource, Building, VillageBuilding
 
+
 def validate_building_constraints(building, village):
     if building.b_type == 'Resource':
         resource_name = building.name
@@ -7,6 +8,7 @@ def validate_building_constraints(building, village):
         if same_name_resources_count >= 4:
             return 'You cannot have more than 4 buildings of the same type.'
     return None
+
 
 def check_and_deduct_resources(selected_building, village, current_level):
     building_costs = selected_building.building_cost.get(str(current_level + 1))
@@ -31,6 +33,7 @@ def check_and_deduct_resources(selected_building, village, current_level):
 
     return False
 
+
 def calculate_troop_cost(construction_cost, quantity):
     total_cost = {}
     for resource, cost in construction_cost.items():
@@ -41,12 +44,14 @@ def calculate_troop_cost(construction_cost, quantity):
 
 
 def deduct_resources(cost, village):
-    resource_costs = cost.get('1', {})  # Retrieve the cost dictionary for the troop type
+    # Retrieve the cost dictionary for the troop type
+    resource_costs = cost.get('1', {})
     village.wood_amount -= resource_costs.get('Wood', 0)
     village.clay_amount -= resource_costs.get('Clay', 0)
     village.iron_amount -= resource_costs.get('Iron', 0)
     village.crop_amount -= resource_costs.get('Crop', 0)
     village.save()
+
 
 def check_village_resources(total_cost, village):
     for resource, cost in total_cost.items():
@@ -61,12 +66,14 @@ def check_village_resources(total_cost, village):
                 return False
     return True
 
+
 def create_resource(building, village):
     building_level = building.level
     generation_rate = building.resource_generation_rate.get(str(building_level), 0)
     resource = Resource.objects.create(village=village, generation_rate=generation_rate)
     resource.building.add(building)
     return resource
+
 
 def create_village_infrastructure(village, building, name):
     village_building = VillageBuilding.objects.create(
@@ -79,7 +86,8 @@ def create_village_infrastructure(village, building, name):
 
 
 def create_village_building(village, building, resource, name):
-    VillageBuilding.objects.create(village=village, building=building, resource=resource, name=name)
+    VillageBuilding.objects.create(
+        village=village, building=building, resource=resource, name=name)
 
 
 def upgrade_building_level(village_building):
@@ -87,12 +95,14 @@ def upgrade_building_level(village_building):
     village_building.save()
     return village_building.level
 
+
 def update_resource_generation_rate(village_building):
     building = village_building.building
     building_level = village_building.level
     new_generation_rate = building.resource_generation_rate.get(str(building_level), 0)
     village_building.resource.generation_rate = new_generation_rate
     village_building.resource.save()
+
 
 def update_population(village):
     village_buildings = village.village_buildings.all()
@@ -106,6 +116,7 @@ def update_population(village):
 
     village.population = total_population
     village.save()
+
 
 def update_village_resource_capacity(selected_building, village_building):
     extra_attributes = selected_building.extra_attributes
@@ -126,4 +137,5 @@ def update_village_resource_capacity(selected_building, village_building):
                 village_building.village.warehouse_capacity = warehouse_capacity
 
         village_building.village.save()
+
 

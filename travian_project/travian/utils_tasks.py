@@ -13,7 +13,6 @@ def calculate_total_generation_rate(village):
         building_name = village_building.building.name
         building_level = village_building.level
         resource_generation_rate = village_building.building.resource_generation_rate.get(str(building_level), 0)
-        
 
         if building_name == 'Woodcutter':
             total_generation_rate['Woodcutter'] += resource_generation_rate
@@ -32,8 +31,3 @@ def calculate_total_generation_rate(village):
     total_generation_rate['Crop'] -= population_consumption
 
     return total_generation_rate
-
-
-
-
-

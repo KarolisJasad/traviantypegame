@@ -2,6 +2,7 @@ from celery import shared_task
 from .utils_tasks import calculate_total_generation_rate
 from django.db.models import F
 
+
 @shared_task
 def update_resource_amount():
     from .models import Village

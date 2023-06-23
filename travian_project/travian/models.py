@@ -10,28 +10,28 @@ from tinymce.models import HTMLField
 User = get_user_model()
 
 BUILDING_TYPE_CHOICES = [
-        ("Resource", "Resource"),
-        ("Military", "Military"),
-        ("Infrastructure", "Infrastructure")
-    ]
+    ("Resource", "Resource"),
+    ("Military", "Military"),
+    ("Infrastructure", "Infrastructure")
+]
 
 TROOP_TYPE_CHOICES = [
-        ("Infantry", "Infantry"),
-        ("Cavalry", "Cavalry")
-    ]
+    ("Infantry", "Infantry"),
+    ("Cavalry", "Cavalry")
+]
 
 LEVEL_CHOICES = [
-        (1, "Level 1"),
-        (2, "Level 2"),
-        (3, "Level 3"),
-        (4, "Level 4"),
-        (5, "Level 5"),
-        (6, "Level 6"),
-        (7, "Level 7"),
-        (8, "Level 8"),
-        (9, "Level 9"),
-        (10, "Level 10"),
-    ]
+    (1, "Level 1"),
+    (2, "Level 2"),
+    (3, "Level 3"),
+    (4, "Level 4"),
+    (5, "Level 5"),
+    (6, "Level 6"),
+    (7, "Level 7"),
+    (8, "Level 8"),
+    (9, "Level 9"),
+    (10, "Level 10"),
+]
 
 
 class Building(models.Model):
@@ -43,10 +43,8 @@ class Building(models.Model):
     resource_generation_rate = models.JSONField(_("resource_generation_rate"),)
     building_cost = models.JSONField(_("building_cost"),)
     extra_attributes = models.JSONField(_("extra_attributes"), blank=True, null=True)
-    description = HTMLField(_("description"), max_length=1000, blank=True, null=True)
+    description = models.TextField(_("description"), max_length=1000, blank=True, null=True)
     picture = models.ImageField(_("picture"), upload_to="building_pictures", blank=True, null=True)
-    
-
 
     class Meta:
         ordering = ['name']
@@ -58,7 +56,8 @@ class Building(models.Model):
 
     def get_absolute_url(self):
         return reverse("building_detail", kwargs={"pk": self.pk})
-    
+
+
 class Village(models.Model):
     user = models.ForeignKey(
         User,
@@ -96,28 +95,28 @@ class Village(models.Model):
 
 class Resource(models.Model):
     village = models.ForeignKey(
-        Village, 
-        verbose_name=_("village"), 
+        Village,
+        verbose_name=_("village"),
         on_delete=models.CASCADE,
         related_name="resources",
         blank=True,
         null=True
     )
     building = models.ManyToManyField(
-        Building, 
+        Building,
         verbose_name=_("buildings"),
         related_name="resources",
         blank=True,
     )
-    generation_rate = models.PositiveIntegerField(_("generation_rate"), default=0) 
+    generation_rate = models.PositiveIntegerField(_("generation_rate"), default=0)
 
     class Meta:
         verbose_name = _("resource")
         verbose_name_plural = _("resources")
 
-
     def get_absolute_url(self):
         return reverse("resource_detail", kwargs={"pk": self.pk})
+
 
 class Troop(models.Model):
     name = models.CharField(_("name"), max_length=50)
@@ -130,7 +129,7 @@ class Troop(models.Model):
     construction_cost = models.JSONField(_("construction_cost"), blank=True, null=True)
     construction_time = models.JSONField(_("construction_time"), blank=True, null=True)
     description = models.TextField(_("description"), max_length=1000, blank=True, null=True)
-    picture = models.ImageField(_("picture"), upload_to="building_pictures", blank=True, null=True)    
+    picture = models.ImageField(_("picture"), upload_to="building_pictures", blank=True, null=True)
 
     class Meta:
         verbose_name = _("troop")
@@ -155,14 +154,14 @@ class VillageBuilding(models.Model):
         related_name='building_villages'
     )
     resource = models.ForeignKey(
-        Resource, 
+        Resource,
         on_delete=models.CASCADE,
         related_name='village_resources',
         blank=True, null=True
     )
-    
+
     name = models.CharField(_("name"), max_length=100)
-    level = models.IntegerField(default=1)               
+    level = models.IntegerField(default=1)
 
     class Meta:
         ordering = ['name']
@@ -170,19 +169,19 @@ class VillageBuilding(models.Model):
     def __str__(self):
         return f"{self.village} - {self.building}"
 
+
 class VillageTroop(models.Model):
     village = models.ForeignKey(
-        Village, 
-        on_delete=models.CASCADE, 
+        Village,
+        on_delete=models.CASCADE,
         related_name='village_troops'
     )
     troop = models.ForeignKey(
-        Troop, 
+        Troop,
         on_delete=models.CASCADE,
         related_name='village_troops'
     )
     quantity = models.PositiveIntegerField(_("quantity"), default=0)
-
 
     class Meta:
         verbose_name = _("villageTroop")
@@ -193,5 +192,3 @@ class VillageTroop(models.Model):
 
     def get_absolute_url(self):
         return reverse("villageTroop_detail", kwargs={"pk": self.pk})
-
-    

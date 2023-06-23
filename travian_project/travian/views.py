@@ -12,15 +12,18 @@ from decimal import Decimal
 import math
 from django.utils.safestring import mark_safe
 
+
 def home(request):
     return render(request, 'travian/home.html')
+
 
 @login_required
 def village_creation(request):
     if request.method == 'POST':
         form = VillageCreationForm(request.POST)
         if form.is_valid():
-            village = form.save(commit=False)  # Create the village instance but don't save it yet
+            # Create the village instance but don't save it yet
+            village = form.save(commit=False)
             village.user = request.user  # Set the user
             village.save()  # Save the village
             return redirect('home')
@@ -30,10 +33,12 @@ def village_creation(request):
     context = {'form': form}
     return render(request, 'travian/village_creation.html', context)
 
+
 @login_required
 def build_building(request):
     if request.method == 'POST':
-        building_ids = request.POST.getlist('building_id')  # Get the selected building IDs as a list
+        # Get the selected building IDs as a list
+        building_ids = request.POST.getlist('building_id')
         village = get_object_or_404(Village, user=request.user)
         messages_list = []
 
@@ -61,6 +66,7 @@ def build_building(request):
 
     return render(request, 'travian/build_resource.html', {'available_buildings': Building.objects.all()})
 
+
 @login_required
 def build_infrastructure(request):
     if request.method == 'POST':
@@ -69,12 +75,12 @@ def build_infrastructure(request):
         village = get_object_or_404(Village, user=request.user)
 
         if village.village_buildings.filter(building=selected_building).exists():
-            messages.error(request, f"You already have a {selected_building.name}. You cannot build another one.")
+            messages.error( request, f"You already have a {selected_building.name}. You cannot build another one.")
         else:
             if check_and_deduct_resources(selected_building, village, 0):
                 village_building = create_village_infrastructure(village, selected_building, name=selected_building.name)
                 update_population(village)
-                update_village_resource_capacity(selected_building, village_building)  # Updated this line
+                update_village_resource_capacity(selected_building, village_building)
                 messages.success(request, 'Building successfully constructed.')
             else:
                 messages.error(request, 'Insufficient resources to build.')
@@ -83,6 +89,7 @@ def build_infrastructure(request):
 
     available_buildings = Building.objects.filter(b_type='Infrastructure')
     return render(request, 'travian/build_infrastructure.html', {'available_buildings': available_buildings})
+
 
 @login_required
 def build_infantry(request):
@@ -109,6 +116,7 @@ def build_infantry(request):
 
     return render(request, 'travian/build_infantry.html', {'available_buildings': available_buildings})
 
+
 @login_required
 def upgrade_building(request):
     if request.method == 'POST':
@@ -134,12 +142,12 @@ def upgrade_building(request):
                 messages.success(request, 'Building successfully upgraded.')
             else:
                 messages.error(request, 'Insufficient resources to upgrade.')
-    
 
     context = {
         'messages': messages.get_messages(request),
     }
     return render(request, 'travian/upgrade_building.html', context)
+
 
 @login_required
 def troop_building(request):
@@ -175,19 +183,22 @@ def troop_building(request):
 
     return render(request, 'travian/troop_building.html', {'barracks_level': barracks_level, 'stable_level': stable_level, 'available_troops': available_troops})
 
+
 def player_list(request):
     players = User.objects.all()  # Retrieve all players
     context = {'players': players}
     return render(request, 'travian/player_list.html', context)
 
+
 def attack_view(request, player_id):
     player = get_object_or_404(User, id=player_id)
-    attacked_village = player.village.first()  # Assuming a player has only one village, retrieve the first village
+    # Assuming a player has only one village, retrieve the first village
+    attacked_village = player.village.first()
     logged_village = get_object_or_404(Village, user=request.user)
-    troops = logged_village.village_troops.all()  # Fetch troops associated with the village
+    # Fetch troops associated with the village
+    troops = logged_village.village_troops.all()
     defender_troops = attacked_village.village_troops.all()
     original_defender_troops = list(defender_troops)
-
 
     if request.method == 'POST':
         selected_troops = {}  # Store the selected troop quantities
@@ -201,7 +212,8 @@ def attack_view(request, player_id):
         attacker_total_attack_power = attacker_cavalry_attack_power + attacker_infantry_attack_power
         defender_cavalry_defense_power = sum(defender_troop.troop.cavalry_defense * defender_troop.quantity for defender_troop in defender_troops)
         defender_infantry_defense_power = sum(defender_troop.troop.defense * defender_troop.quantity for defender_troop in defender_troops)
-        defender_total_defense_power = (defender_cavalry_defense_power * (attacker_cavalry_attack_power / attacker_total_attack_power)) + (defender_infantry_defense_power * (attacker_infantry_attack_power / attacker_total_attack_power))
+        defender_total_defense_power = (defender_cavalry_defense_power * (attacker_cavalry_attack_power / attacker_total_attack_power)) + (
+            defender_infantry_defense_power * (attacker_infantry_attack_power / attacker_total_attack_power))
         if attacker_total_attack_power >= defender_total_defense_power:
             # Attacker wins
             loser_strength = defender_total_defense_power
@@ -225,23 +237,24 @@ def attack_view(request, player_id):
             dead_troops_list = []
             for troop, quantity in selected_troops.items():
                 surviving_quantity = math.ceil(quantity * (1 - winner_casualties_percent / 100))
-                remaining_quantity = max(surviving_quantity, 0)  # Ensure the quantity doesn't go below zero
+                # Ensure the quantity doesn't go below zero
+                remaining_quantity = max(surviving_quantity, 0)
                 dead_troops = quantity - remaining_quantity
                 dead_troops_list.append(dead_troops)
                 troop.quantity = troop.quantity - dead_troops
                 troop.save()
                 total_carrying_capacity += troop.troop.carrying_capacity * remaining_quantity
-            
+
             # Calculate the stolen resource amounts
             wood_amount = total_carrying_capacity / 4
             clay_amount = total_carrying_capacity / 4
             iron_amount = total_carrying_capacity / 4
             crop_amount = total_carrying_capacity / 4
 
-            wood_amount = min(attacked_village.wood_amount, Decimal(wood_amount))
-            clay_amount = min(attacked_village.clay_amount, Decimal(clay_amount))
-            iron_amount = min(attacked_village.iron_amount, Decimal(iron_amount))
-            crop_amount = min(attacked_village.crop_amount, Decimal(crop_amount))
+            wood_amount = min(attacked_village.wood_amount,Decimal(wood_amount))
+            clay_amount = min(attacked_village.clay_amount,Decimal(clay_amount))
+            iron_amount = min(attacked_village.iron_amount,Decimal(iron_amount))
+            crop_amount = min(attacked_village.crop_amount,Decimal(crop_amount))
 
             total_stolen_amount = wood_amount + clay_amount + iron_amount + crop_amount
 
@@ -259,32 +272,32 @@ def attack_view(request, player_id):
             defender_troops.delete()
             print(original_defender_troops)
             return render(request, 'travian/attack_win_result.html', {
-            'attacked_village': attacked_village,
-            'selected_troops': selected_troops,
-            'casualties': dead_troops_list,
-            'original_deffender': original_defender_troops,
-            'attacker_total_attack_power': winner_strength,
-            'defender_troops': losing_troops,
-            'defender_total_defense_power': defender_total_defense_power,
-            'wood_amount': wood_amount,
-            'clay_amount': clay_amount,
-            'iron_amount': iron_amount,
-            'crop_amount': crop_amount,
-            'total_stolen_amount': total_stolen_amount,
-            'total_carrying_capacity': total_carrying_capacity,
-        })
+                'attacked_village': attacked_village,
+                'selected_troops': selected_troops,
+                'casualties': dead_troops_list,
+                'original_deffender': original_defender_troops,
+                'attacker_total_attack_power': winner_strength,
+                'defender_troops': losing_troops,
+                'defender_total_defense_power': defender_total_defense_power,
+                'wood_amount': wood_amount,
+                'clay_amount': clay_amount,
+                'iron_amount': iron_amount,
+                'crop_amount': crop_amount,
+                'total_stolen_amount': total_stolen_amount,
+                'total_carrying_capacity': total_carrying_capacity,
+            })
 
         else:
             # Defender wins
             dead_troops_list = []
             for troop, quantity in winner_troops.items():
                 surviving_quantity = math.ceil(troop.quantity * (1 - winner_casualties_percent / 100))
-                remaining_quantity = max(surviving_quantity, 0) 
+                remaining_quantity = max(surviving_quantity, 0)
                 dead_troops = quantity - remaining_quantity
                 dead_troops_list.append(dead_troops)
                 troop.quantity = troop.quantity - dead_troops
                 troop.save()
-            
+
             for troop, quantity in loser_troops.items():
                 troop.quantity -= quantity
                 troop.save()
@@ -303,10 +316,9 @@ def attack_view(request, player_id):
             'total_carrying_capacity': total_carrying_capacity,
             'casualties': dead_troops_list,
         })
-    
+
     return render(request, 'travian/attack.html', {'player': player, 'attacked_village': attacked_village, 'troops': troops})
+
 
 def generate_building_name(building, count):
     return f"{building.name} {count}"
-
-

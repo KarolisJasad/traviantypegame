@@ -19,26 +19,56 @@ body, html {
   }
   
   header {
-  background-color: rgba(135, 206, 250, 0.8); /* Light blue color with transparency */
-  padding: 10px;
+    background-color: rgba(135, 206, 250, 0.4); /* Light blue color with transparency */
+    padding: 10px;
   }
   
+  /* Navigation Bar */
   .nav {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .nav li {
+    list-style-type: none;
+  }
+  
+  .nav li a {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .nav li a:hover {
+    background-color: #ccc;
+  }
+  
+  .logo {
+    font-weight: bold;
+    font-size: 24px;
   }
   
   .res-nav {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      background-color: rgba(135, 206, 250, 0.6);
-      }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f2f2f2;
+    padding: 10px;
+    list-style: none;
+    margin: 0;
+  }
+  
+  .res-nav li {
+    display: inline;
+    margin: 0 10px;
+    color: #333;
+  }
   
   .logo {
   font-size: 24px;
@@ -46,18 +76,6 @@ body, html {
   color: #ffffff; /* White text color */
   margin-right: 20px;
   }
-  
-  .nav li {
-  margin-right: 10px;
-  color: #ffffff; /* White text color */
-  font-size: 16px;
-  }
-  
-  .res-nav li {
-      margin-right: 10px;
-      color: #ffffff; /* White text color */
-      font-size: 16px;
-      }
   
   footer {
   background-color: rgba(0, 48, 73, 0.5);
@@ -96,8 +114,67 @@ body, html {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
   
+  .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.3);
+      padding: 20px;
+      height: 100vh;
+  }
+  
+  .login-box {
+      max-width: 400px;
+      padding: 20px;
+      background-color: rgba(245, 245, 245, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-form {
+      margin-top: 20px;
+  }
+  
   .signup-form {
   margin-top: 20px;
+  }
+  
+  .create-village-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.3);
+      padding: 20px;
+      height: 100vh;
+  }
+  
+  .create-village-box {
+      max-width: 400px;
+      padding: 20px;
+      background-color: rgba(245, 245, 245, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .create-village-form {
+      margin-top: 20px;
+  }
+  
+  .goodbye-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.3);
+      padding: 20px;
+      height: 100vh;
+  }
+  
+  .goodbye-box {
+      max-width: 400px;
+      padding: 20px;
+      background-color: rgba(245, 245, 245, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
   
   .form-group {
@@ -137,147 +214,251 @@ body, html {
   }
   
   .description {
-      max-width: 400px;
-      margin-right: 20px;
+  max-width: 400px;
+  margin-right: 20px;
   }
   
   .description h1 {
-      font-size: 36px;
-      font-weight: bold;
-      margin-bottom: 10px;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 10px;
   }
   
   .description p {
-      font-size: 16px;
-      margin-bottom: 5px;
+  font-size: 16px;
+  margin-bottom: 5px;
   }
   
   .resource-bar {
-      background-color: #f2f2f2;
-      padding: 10px;
-      text-align: center;
+  background-color: #f2f2f2;
+  padding: 10px;
+  text-align: center;
   }
   
   .resource-bar p {
-      display: inline-block;
-      margin: 0 10px;
+  display: inline-block;
+  margin: 0 10px;
   }
   
   .resource-bar p:first-child {
-      margin-left: 0;
+  margin-left: 0;
   }
   
   .resource-bar p:last-child {
-      margin-right: 0;
+  margin-right: 0;
   }
   
-  .resources-table {
-      margin-bottom: 40px;
-      }
-      
-      .resources-table h2 {
-      color: black;
-      font-size: 24px;
-      margin-bottom: 10px;
-      }
-      
-      .resources-table table {
-      width: 100%;
-      border-collapse: collapse;
-      }
-      
-      .resources-table th,
-      .resources-table td {
-      padding: 10px;
-      text-align: center;
-      }
-      
-      .resources-table th {
-      background-color: #333;
-      color: #fff;
-      }
-      
-      .resources-table tbody tr:nth-child(even) {
-      background-color: #f2f2f2;
-      }
-      
-      .troops-table h2 {
-      color: black;
-      font-size: 24px;
-      margin-bottom: 10px;
-      }
-      
-      .troops-table table {
-      width: 100%;
-      border-collapse: collapse;
-      }
-      
-      .troops-table th,
-      .troops-table td {
-      padding: 10px;
-      text-align: center;
-      }
-      
-      .troops-table th {
-      background-color: #333;
-      color: #fff;
-      }
-      
-      .troops-table tbody tr:nth-child(even) {
-      background-color: #f2f2f2;
-      }
+  .tables-container-home {
+    display: flex;
+    padding: 10px;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
   
-      .attack-result {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          background-color: #f2f2f2;
-        }
-      
-        .attack-result-content {
-          max-width: 600px;
-          padding: 20px;
-          background-color: #fff;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-        }
-      
-        .attack-result h1 {
-          text-align: center;
-        }
-      
-        .attack-result h2 {
-          text-align: center;
-          margin-bottom: 20px;
-        }
-      
-        .attack-result h3 {
-          margin-top: 20px;
-        }
-      
-        .attack-result table {
-          width: 100%;
-          margin-bottom: 20px;
-          border-collapse: collapse;
-        }
-      
-        .attack-result table th,
-        .attack-result table td {
-          padding: 8px;
-          text-align: center;
-          border: 1px solid #ccc;
-        }
-      
-        .attack-result table th {
-          background-color: #f2f2f2;
-        }
-      
-        .attack-result table td {
-          background-color: #fff;
-        }
-      
-        .attack-result p {
-          text-align: center;
-          margin-bottom: 10px;
-        }
+  .resources-table-home,
+  .troops-table-home {
+    width: 45%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .resources-table-home h2,
+  .troops-table-home h2 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .resources-table-home table,
+  .troops-table-home table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .resources-table-home th,
+  .resources-table-home td,
+  .troops-table-home th,
+  .troops-table-home td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .resources-table-home th,
+  .troops-table-home th {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  .resources-table-home tbody tr:nth-child(even),
+  .troops-table-home tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .resources-table-home tbody tr:hover,
+  .troops-table-home tbody tr:hover {
+    background-color: #e0e0e0;
+  }
+    .container-building {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+  .building-block {
+    width: 300px;
+    height: 550px;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    background-color: white;
+  }
+  
+  .building-block img {
+    max-width: 100%;
+    max-height: 200px;
+  }
+  
+  .building-block p {
+    margin-bottom: 10px;
+  }
+  
+  .building-block button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  margin-top: bottom;  /* Add this line */
+  }
+  
+  .building-block button:hover {
+    background-color: #45a049;
+  }
+    
+    .building-block-update {
+      flex: 0 0 calc(16.66% - 20px); /* Adjusted width to accommodate 6 blocks per row */
+      height: 160px;
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+      background-color: white;
+    }
+    
+    .building-block-update img {
+      max-width: 100%;
+      max-height: 50px;
+    }
+    
+    .building-block-update p {
+      margin-bottom: 10px;
+    }
+    
+    .building-block-update button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .building-block-update button:hover {
+      background-color: #45a049;
+    }
+  
+  .attack-result {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+  }
+  
+  .attack-result-content {
+  max-width: 600px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  }
+  
+  .attack-result h1 {
+  text-align: center;
+  }
+  
+  .attack-result h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  }
+  
+  .attack-result h3 {
+  margin-top: 20px;
+  }
+  
+  .attack-result table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+  }
+  
+  .attack-result table th,
+  .attack-result table td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+  }
+  
+  .attack-result table th {
+  background-color: #f2f2f2;
+  }
+  
+  .attack-result table td {
+  background-color: #fff;
+  }
+  
+  .attack-result p {
+  text-align: center;
+  margin-bottom: 10px;
+  }
+
+  .player-list-table {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+  .player-list-table  h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+  .player-list-table  table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+  .player-list-table  th,
+    td {
+      padding: 10px;
+      text-align: left;
+    }
+    
+  .player-list-table thead {
+      background-color: #f9f9f9;
+    }
+    
+  .player-list-table  tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    
+    .attack-link {
+      color: #007bff;
+      text-decoration: none;
+    }
+    
+    .attack-link:hover {
+      text-decoration: underline;
+    }
