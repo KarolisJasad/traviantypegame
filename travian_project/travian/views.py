@@ -2,15 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from .forms import BuildingForm, VillageCreationForm
-from collections import defaultdict
-from .models import User, Building, Resource, Village, VillageBuilding, Troop, VillageTroop
-from django.db.models import F
+from .forms import VillageCreationForm
+from .models import User, Building, Village, VillageBuilding, Troop, VillageTroop
 from .utils_views import *
 from .utils_tasks import *
 from decimal import Decimal
 import math
-from django.utils.safestring import mark_safe
 
 
 def home(request):
