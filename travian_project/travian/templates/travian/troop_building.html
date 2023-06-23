@@ -18,7 +18,7 @@
                 <h3>{{ troop.name }}</h3>
                 <img src="{{ troop.picture.url }}" alt="{{ troop.name }}">
                 <p>{{ troop.description }}</p>
-                <p>Unit Cost: {% for resource, value in troop.unit_cost_print.items %}{{ resource }}: {{ value }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <p>Unit Cost: {% for resource, value in troop.unit_cost_print.items %}{{ resource }}: {{ value }} {% endfor %}</p>
                 <label for="troop_quantity">Quantity:</label>
                 <input type="number" name="quantity_{{ troop.id }}" id="troop_quantity" value="0" min="0">
                 <button type="submit" name="troop_id" value="{{ troop.id }}">Build Troops</button>

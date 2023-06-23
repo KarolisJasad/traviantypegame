@@ -24,7 +24,7 @@
                   {% if next_level == 11 %}
                     This building is already at its maximum level.
                   {% else %}
-                  <p>Building Cost: {% for resource, value in village_building.building_cost_print.items %}{{ resource }}: {{ value }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                  <p>Building Cost: {% for resource, value in village_building.building_cost_print.items %}{{ resource }}: {{ value }} {% endfor %}</p>
                   {% endif%}
                     {% endwith %}
                 <button type="submit" name="building_id" value="{{ village_building.id }}">Upgrade</button>
