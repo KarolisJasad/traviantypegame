@@ -33,13 +33,15 @@ Currently you have to go to admin panel and make a village through there and all
 4. Infrastructure building/upgrading(Increased capacity of resource you can have based on building level)
 5. Baracks/Stable building
 6. Allow troops building in each building(Atleast 2 kind of troops in each)
+7. Player list/attacking players(Taking resources away from enemy if succeeded)
 
 # TO-DO List
 Fix Design to be more friendly/prettier
 Make a village creation screen after registration/ask to make a village if user skips village creation
 Add more functionalities.
 Priority:
-1. Player list/attacking players(Taking resources away from enemy if succeeded)
-2. Bug fixing/debuging
-3. Design
+1. Bug fixing/debuging
+2. Design
+3. Add time based constructions/troop building
+4. Add more functionalities
 
