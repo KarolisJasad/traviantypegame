@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Build Troops</h2>
+  <h2 style="text-align: center;">Build Troops</h2>
 
   {% if barracks_level >= 1 %}
-    <h3>Barracks Level: {{ barracks_level }}</h3>
-    <h3>Stable Level: {{ stable_level }}</h3>
+    <h3 style="text-align: center;">Barracks Level: {{ barracks_level }}</h3>
+    <h3 style="text-align: center;">Stable Level: {{ stable_level }}</h3>
 
     <form method="POST" action="{% url 'troop_building' %}">
       <div class="container-building">
@@ -33,11 +33,11 @@
     {% if messages %}
       <ul class="messages">
         {% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          <li style="text-align: center;" {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %}
       </ul>
     {% endif %}
   {% else %}
-    <p>Barracks or stable building is not yet built in the village.</p>
+    <p h2 style="text-align: center;">Barracks or stable building is not yet built in the village.</p>
   {% endif %}
 {% endblock %}

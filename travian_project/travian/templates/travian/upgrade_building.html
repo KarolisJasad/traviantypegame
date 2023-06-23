@@ -2,7 +2,7 @@
 {% load custom_filters %}
 
 {% block content %}
-  <h1>Upgrade a Building</h1>
+  <h1 style="text-align: center;">Upgrade a Building</h1>
   <form method="post" action="{% url 'upgrade_building' %}">
     {% csrf_token %}
     {% with village=request.user.village.first %}
@@ -12,7 +12,7 @@
           <input type="hidden" name="village_id" value="{{ village.id }}">
           <ul class="messages">
             {% for message in messages %}
-              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+              <li style="text-align: center;" {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
             {% endfor %}
           </ul>
           <div class="container-building">
@@ -32,14 +32,11 @@
             {% endfor %}
           </div>
         {% else %}
-          <p>You don't have any buildings in your village. Build a building before upgrading.</p>
+          <p h2 style="text-align: center;" >You don't have any buildings in your village. Build a building before upgrading.</p>
         {% endif %}
       {% else %}
-        <p>No village found for the current user.</p>
+        <p h2 style="text-align: center;">No village found for the current user.</p>
       {% endif %}
     {% endwith %}
   </form>
-  {% if request.method == 'POST' %}
-    <!-- Handle the POST request if needed -->
-  {% endif %}
 {% endblock %}

@@ -16,15 +16,13 @@
             {% if user.is_authenticated and village %}
                 <ul class="nav">
                     <li class="logo"> <a href="{% url 'home' %}"> Travan </a></li>
-                    {% if user.is_staff or user.is_superuser %}
                         <li><a href="{% url 'build_resource' %}">Build Resources</a></li>
                         <li><a href="{% url 'build_infrastructure'%}"> Build Infrastructure</a></li>
                         <li><a href="{% url 'build_infantry' %}">Build Infantry building</a></li>
                         <li><a href="{% url 'upgrade_building' %}">Upgrade a Building</a></li>
                         <li><a href="{% url 'troop_building' %}">Build Infantry troops</a></li>
                         <li><a href="{% url 'player_list' %}">Player list</a></li>
-                        <li><a href="{% url 'logout' %}">Logout</a></li>
-                    {% endif %}           
+                        <li><a href="{% url 'logout' %}">Logout</a></li>        
                 </ul>
             {% endif %}
         </header>
