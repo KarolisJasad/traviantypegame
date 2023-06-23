@@ -231,6 +231,7 @@ def attack_view(request, player_id):
             # Attacker wins
             dead_troops_list = []
             for troop, quantity in selected_troops.items():
+                surviving_quantity = math.ceil(quantity * (1 - winner_casualties_percent / 100))
                 remaining_quantity = max(surviving_quantity, 0)
                 dead_troops = quantity - remaining_quantity
                 dead_troops_list.append(dead_troops)
@@ -257,10 +258,22 @@ def attack_view(request, player_id):
             attacked_village.crop_amount -= crop_amount
             attacked_village.save()
 
-            logged_village.wood_amount += wood_amount
-            logged_village.clay_amount += clay_amount
-            logged_village.iron_amount += iron_amount
-            logged_village.crop_amount += crop_amount
+            if logged_village.wood_amount == logged_village.warehouse_capacity:
+                logged_village.wood_amount = logged_village.warehouse_capacity
+            else:  
+                logged_village.wood_amount += wood_amount
+            if logged_village.clay_amount == logged_village.warehouse_capacity:
+                logged_village.clay_amount = logged_village.warehouse_capacity
+            else:  
+                logged_village.clay_amount += clay_amount
+            if logged_village.iron_amount == logged_village.warehouse_capacity:
+                logged_village.iron_amount = logged_village.warehouse_capacity
+            else:  
+                logged_village.iron_amount += iron_amount
+            if logged_village.crop_amount == logged_village.granary_capacity:
+                logged_village.crop_amount = logged_village.granary_capacity
+            else:  
+                logged_village.crop_amount += crop_amount
             logged_village.save()
             defender_troops.delete()
             print(original_defender_troops)
