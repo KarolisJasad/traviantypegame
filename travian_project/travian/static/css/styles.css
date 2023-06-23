@@ -339,7 +339,7 @@ body, html {
     
     .building-block-update {
       flex: 0 0 calc(16.66% - 20px); /* Adjusted width to accommodate 6 blocks per row */
-      height: 160px;
+      height: 220px;
       margin: 10px;
       padding: 10px;
       border: 1px solid #ccc;
